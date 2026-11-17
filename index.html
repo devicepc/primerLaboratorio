@@ -1,0 +1,2614 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Laboratorio Interactivo: Circuito de Carga Tradicional (LA-9902P) y USB-C PD</title>
+  <style>
+    :root {
+      --bg-dark: #090d16;
+      --bg-panel: #111827;
+      --bg-card: #1e293b;
+      --border: #334155;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --accent-blue: #38bdf8;
+      --accent-green: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-red: #ef4444;
+      --accent-purple: #a855f7;
+      --accent-pink: #ec4899;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      line-height: 1.5;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1460px;
+      margin: 0 auto;
+    }
+
+    header.main-header {
+      text-align: center;
+      padding: 24px 20px;
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      margin-bottom: 28px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    header.main-header h1 {
+      font-size: 1.85rem;
+      color: var(--accent-blue);
+      margin-bottom: 8px;
+    }
+
+    header.main-header p {
+      color: var(--text-muted);
+      max-width: 900px;
+      margin: 0 auto;
+      font-size: 0.96rem;
+    }
+
+    .nav-pills {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    .nav-pills a {
+      text-decoration: none;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid var(--accent-blue);
+      color: var(--accent-blue);
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-weight: 600;
+      font-size: 0.88rem;
+      transition: all 0.2s;
+    }
+
+    .nav-pills a:hover {
+      background: var(--accent-blue);
+      color: #090d16;
+    }
+
+    .simulator-section {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 22px;
+      margin-bottom: 38px;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 18px;
+    }
+
+    .section-title {
+      flex: 1;
+      min-width: 260px;
+    }
+
+    .section-title h2 {
+      font-size: 1.4rem;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    #btn-chal-trad,
+    #btn-chal-usbc {
+      margin-left: auto;
+      white-space: nowrap;
+    }
+
+    .badge {
+      font-size: 0.74rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-trad {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--accent-amber);
+      border: 1px solid var(--accent-amber);
+    }
+
+    .badge-usbc {
+      background: rgba(168, 85, 247, 0.2);
+      color: var(--accent-purple);
+      border: 1px solid var(--accent-purple);
+    }
+
+    /* REPRODUCTOR INTERACTIVO DE NEGOCIACIÓN USB-C */
+    .video-negotiation-box {
+      background: linear-gradient(145deg, #0b1324, #141b33);
+      border: 1.5px solid #4f46e5;
+      border-radius: 14px;
+      padding: 16px 18px;
+      margin-bottom: 18px;
+      box-shadow: 0 8px 25px rgba(79, 70, 229, 0.18);
+    }
+
+    .video-top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .video-title-area {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .live-pill {
+      background: #ef4444;
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 4px;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+    }
+
+    .video-title-area h3 {
+      font-size: 1.02rem;
+      color: #e0e7ff;
+    }
+
+    .video-transport {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .video-transport button {
+      padding: 6px 12px;
+      font-size: 0.82rem;
+      border-radius: 6px;
+      background: #1e293b;
+      border: 1px solid #475569;
+      color: #f8fafc;
+      font-weight: 600;
+    }
+
+    .video-transport button.play-btn {
+      background: #10b981;
+      color: #042f2e;
+      border-color: #10b981;
+      font-weight: 800;
+    }
+
+    .video-transport button.play-btn.playing {
+      background: #f59e0b;
+      color: #1c1917;
+      border-color: #f59e0b;
+    }
+
+    .video-progress-track {
+      width: 100%;
+      height: 7px;
+      background: #1e293b;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .video-progress-fill {
+      height: 100%;
+      width: 14.2%;
+      background: linear-gradient(90deg, #38bdf8, #a855f7, #10b981);
+      transition: width 0.35s ease;
+    }
+
+    .timeline-steps {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    @media (max-width: 1200px) {
+      .timeline-steps {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .timeline-steps {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .t-step {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 8px 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: left;
+    }
+
+    .t-step:hover {
+      border-color: #38bdf8;
+    }
+
+    .t-step.active {
+      background: rgba(56, 189, 248, 0.14);
+      border-color: #38bdf8;
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+    }
+
+    .t-step .step-num {
+      font-size: 0.68rem;
+      font-weight: 800;
+      color: #38bdf8;
+      text-transform: uppercase;
+      display: block;
+    }
+
+    .t-step .step-name {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #f1f5f9;
+      line-height: 1.25;
+    }
+
+    .video-caption-bar {
+      background: #060a12;
+      border-left: 4px solid #38bdf8;
+      padding: 10px 14px;
+      border-radius: 0 8px 8px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .video-caption-text {
+      font-size: 0.9rem;
+      color: #e2e8f0;
+    }
+
+    .video-caption-badge {
+      font-family: 'Courier New', monospace;
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(16, 185, 129, 0.16);
+      color: #34d399;
+      border: 1px solid #10b981;
+      white-space: nowrap;
+    }
+
+    /* CONTROLES DE SIMULACIÓN */
+    .controls-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      background: var(--bg-card);
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      margin-bottom: 18px;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .control-group label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    select, button {
+      padding: 9px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #0f172a;
+      color: #fff;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    select:focus, button:hover:not(:disabled) {
+      border-color: var(--accent-blue);
+    }
+
+    select:disabled, button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: var(--accent-blue);
+      color: #090d16;
+      font-weight: 700;
+      border: none;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: #7dd3fc;
+    }
+
+    .btn-challenge {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid var(--accent-red);
+      color: #fca5a5;
+      font-weight: 600;
+    }
+
+    .btn-challenge.active {
+      background: var(--accent-red);
+      color: #fff;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: 1.54fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 1080px) {
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .board-container {
+      background: #050a14;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .board-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 0.76rem;
+      margin-bottom: 10px;
+      color: var(--text-muted);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    svg.pcb-svg {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 10px;
+      user-select: none;
+    }
+
+    /* PISTAS DE COBRE Y ANIMACIÓN DE CORRIENTE */
+    .copper-trace {
+      fill: none;
+      stroke: #0e3a53;
+      stroke-width: 7;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .wire-flow {
+      fill: none;
+      stroke-width: 4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 10 10;
+      animation: flowAnim 0.8s linear infinite;
+      transition: opacity 0.25s, stroke 0.25s;
+    }
+
+    .wire-flow.reverse {
+      animation: flowAnimReverse 0.8s linear infinite;
+    }
+
+    .wire-flow.off {
+      opacity: 0;
+      animation: none;
+    }
+
+    @keyframes flowAnim {
+      to { stroke-dashoffset: -20; }
+    }
+
+    @keyframes flowAnimReverse {
+      to { stroke-dashoffset: 20; }
+    }
+
+    /* COMPONENTES Y PINES INTERACTIVOS */
+    .hotspot {
+      cursor: pointer;
+    }
+
+    .hotspot .selection-ring {
+      fill: rgba(56, 189, 248, 0.01);
+      stroke: transparent;
+      stroke-width: 2;
+      rx: 8;
+      transition: all 0.2s ease;
+    }
+
+    .hotspot:hover .selection-ring {
+      stroke: rgba(255, 255, 255, 0.8);
+      fill: rgba(255, 255, 255, 0.05);
+    }
+
+    .hotspot.selected .selection-ring {
+      stroke: #38bdf8;
+      stroke-width: 2.5;
+      fill: rgba(56, 189, 248, 0.1);
+    }
+
+    .hotspot.faulted .selection-ring {
+      stroke: #ef4444 !important;
+      stroke-width: 3 !important;
+      fill: rgba(239, 68, 68, 0.22) !important;
+      animation: pulseFault 0.9s infinite alternate;
+    }
+
+    /* PINES CLICABLES */
+    .pin-target {
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .pin-target:hover rect,
+    .pin-target:hover circle {
+      stroke: #ffffff;
+      stroke-width: 2;
+      filter: drop-shadow(0 0 6px #38bdf8);
+    }
+
+    .pin-target.pin-active rect,
+    .pin-target.pin-active circle {
+      fill: #38bdf8 !important;
+      stroke: #ffffff !important;
+      stroke-width: 2.2 !important;
+      filter: drop-shadow(0 0 10px #38bdf8);
+    }
+
+    @keyframes pulseFault {
+      from { filter: drop-shadow(0 0 4px #ef4444); }
+      to { filter: drop-shadow(0 0 16px #ef4444); }
+    }
+
+    .silk-label {
+      font-family: 'Courier New', Courier, monospace;
+      font-weight: 700;
+      fill: #f8fafc;
+      font-size: 10.5px;
+      letter-spacing: 0.4px;
+    }
+
+    .num-badge {
+      fill: #ef4444;
+      stroke: #fff;
+      stroke-width: 1.2;
+    }
+
+    .num-text {
+      fill: #fff;
+      font-size: 10px;
+      font-weight: 800;
+      text-anchor: middle;
+    }
+
+    /* PANEL DERECHO: INSTRUMENTOS Y FICHA DE PINES */
+    .console-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .instrument-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 15px;
+    }
+
+    .instrument-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--text-muted);
+      margin-bottom: 9px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .multimeter-screen {
+      background: #0a140f;
+      border: 2px solid #2a3b32;
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-family: 'Courier New', Courier, monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.85);
+    }
+
+    .mm-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #34d399;
+      text-shadow: 0 0 10px rgba(52, 211, 153, 0.4);
+    }
+
+    .mm-value.danger {
+      color: #f87171;
+      text-shadow: 0 0 10px rgba(248, 113, 113, 0.5);
+    }
+
+    .mm-sub {
+      text-align: right;
+      font-size: 0.76rem;
+      color: #6ee7b7;
+    }
+
+    .mm-modes {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .mm-modes button {
+      flex: 1;
+      font-size: 0.77rem;
+      padding: 7px 6px;
+      background: #0f172a;
+      white-space: nowrap;
+    }
+
+    .mm-modes button.active {
+      background: var(--accent-green);
+      color: #062116;
+      font-weight: 700;
+      border-color: var(--accent-green);
+    }
+
+    .usbc-tester-box {
+      background: linear-gradient(145deg, #111827, #090d16);
+      border: 2px solid var(--accent-purple);
+      border-radius: 10px;
+      padding: 10px 12px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .tester-metric {
+      background: #05080f;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #2e1065;
+      text-align: center;
+    }
+
+    .tester-metric span.label {
+      display: block;
+      font-size: 0.68rem;
+      color: #c084fc;
+      text-transform: uppercase;
+    }
+
+    .tester-metric span.val {
+      font-family: 'Courier New', monospace;
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: #38bdf8;
+    }
+
+    .tester-status-pill {
+      grid-column: span 2;
+      text-align: center;
+      font-size: 0.78rem;
+      padding: 5px 8px;
+      border-radius: 6px;
+      background: rgba(168, 85, 247, 0.15);
+      color: #e9d5ff;
+      font-weight: 600;
+    }
+
+    /* TARJETA ESPECIAL DE PIN SEÑALADO (DERECHA) */
+    .pin-inspector-card {
+      background: linear-gradient(160deg, #0f172a 0%, #172033 100%);
+      border: 1.5px solid #38bdf8;
+      border-radius: 12px;
+      padding: 15px;
+      box-shadow: 0 6px 20px rgba(56, 189, 248, 0.12);
+    }
+
+    .pin-inspector-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid #334155;
+      gap: 8px;
+    }
+
+    .pin-tag {
+      background: #38bdf8;
+      color: #090d16;
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 5px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .pin-detail-row {
+      margin-bottom: 8px;
+      font-size: 0.87rem;
+    }
+
+    .pin-detail-row strong {
+      color: #7dd3fc;
+      display: block;
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .pin-connection-box {
+      background: rgba(168, 85, 247, 0.12);
+      border-left: 3px solid #a855f7;
+      padding: 8px 10px;
+      border-radius: 0 6px 6px 0;
+      font-size: 0.84rem;
+      color: #f3e8ff;
+      margin-top: 6px;
+    }
+
+    .info-box h3 {
+      color: var(--accent-blue);
+      font-size: 1.02rem;
+      margin-bottom: 6px;
+    }
+
+    .info-box p {
+      font-size: 0.88rem;
+      color: #cbd5e1;
+      margin-bottom: 8px;
+    }
+
+    .measure-tip {
+      background: rgba(16, 185, 129, 0.1);
+      border-left: 4px solid var(--accent-green);
+      padding: 9px 11px;
+      border-radius: 0 8px 8px 0;
+      font-size: 0.84rem;
+      color: #a7f3d0;
+    }
+
+    .fault-alert {
+      background: rgba(239, 68, 68, 0.12);
+      border-left: 4px solid var(--accent-red);
+      padding: 9px 11px;
+      border-radius: 0 8px 8px 0;
+      font-size: 0.84rem;
+      color: #fecaca;
+      margin-top: 10px;
+    }
+
+    .challenge-box {
+      display: none;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid var(--accent-red);
+      border-radius: 10px;
+      padding: 12px;
+      margin-top: 10px;
+    }
+
+    .challenge-box.visible {
+      display: block;
+    }
+
+    .challenge-box h4 {
+      color: #fca5a5;
+      margin-bottom: 6px;
+      font-size: 0.92rem;
+    }
+
+    .challenge-controls {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .challenge-controls select {
+      flex: 1;
+    }
+
+    footer {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.84rem;
+      padding: 18px 0 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="main-header">
+      <h1>⚡ Laboratorio Interactivo de Circuitos de Carga de Notebook</h1>
+      <p>
+        Explora paso a paso cómo ingresa la energía en placas tradicionales (LA-9902P) y en arquitectura moderna USB-C Power Delivery hasta la batería.
+        Reproduce la secuencia de negociación como un video interactivo y haz clic en cada pata o pin para inspeccionar su función, mediciones y reparación.
+      </p>
+      <div class="nav-pills">
+        <a href="#modulo-tradicional">1. Circuito Tradicional (Placa LA-9902P • 19.5V)</a>
+        <a href="#modulo-usbc">2. Circuito Moderno USB-C Power Delivery (5V → 20V → Batería)</a>
+      </div>
+    </header>
+
+    <!-- ===================================================================== -->
+    <!-- MÓDULO 1: CIRCUITO TRADICIONAL REALISTA (PLACA VILG1/G2 LA-9902P)     -->
+    <!-- ===================================================================== -->
+    <section id="modulo-tradicional" class="simulator-section">
+      <div class="section-header">
+        <div class="section-title">
+          <h2>🔌 Bloque 1: Circuito de Carga Tradicional (Placa LA-9902P) <span class="badge badge-trad">DC-IN 19.5V Fijo</span></h2>
+        </div>
+        <button id="btn-chal-trad" class="btn-challenge" onclick="toggleChallenge('trad')">🎯 Modo Desafío Técnico</button>
+      </div>
+
+      <div class="controls-bar">
+        <div class="control-group">
+          <label>Estado de Alimentación</label>
+          <select id="trad-power-mode" onchange="updateTradSim()">
+            <option value="charging">Cargador + Batería (Cargando)</option>
+            <option value="ac_only">Solo Cargador Conectado</option>
+            <option value="bat_only">Solo Batería (Sin Cargador)</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label>Simulador de Fallas en Placa</label>
+          <select id="trad-fault-select" onchange="updateTradSim()">
+            <option value="none">✅ Sin Fallas (Funcionamiento Normal)</option>
+            <option value="pf101_open">❌ Falla 1: Fusible Principal PF101 Abierto</option>
+            <option value="no_charge_pump">❌ Falla 2: Sin Bomba de Carga (24.8V) en Gate</option>
+            <option value="pq302_short">❌ Falla 3: Primer MOSFET PQ302 en Cortocircuito</option>
+            <option value="pu301_dead">❌ Falla 4: IC de Carga PU301 (BQ24725A) Dañado</option>
+            <option value="pf201_open">❌ Falla 5: Fusible de Batería PF201 Abierto</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label>Acción Rápida</label>
+          <button id="btn-rand-trad" class="btn-primary" onclick="randomFault('trad')">🎲 Generar Falla Aleatoria</button>
+        </div>
+      </div>
+
+      <div class="workspace">
+        <div class="board-container">
+          <div class="board-legend">
+            <div class="legend-item"><span class="dot" style="background:#f59e0b"></span> Entrada DC-IN 19.5V</div>
+            <div class="legend-item"><span class="dot" style="background:#a855f7"></span> Bomba de Carga Gate (24.8V)</div>
+            <div class="legend-item"><span class="dot" style="background:#38bdf8"></span> Riel Principal Sistema (B+)</div>
+            <div class="legend-item"><span class="dot" style="background:#10b981"></span> Carga / Descarga Batería (12.6V)</div>
+          </div>
+
+          <svg class="pcb-svg" viewBox="0 0 840 500">
+            <defs>
+              <linearGradient id="pcbBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#0a335c" />
+                <stop offset="50%" stop-color="#072748" />
+                <stop offset="100%" stop-color="#051c36" />
+              </linearGradient>
+              <linearGradient id="metalGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#e2e8f0" />
+                <stop offset="50%" stop-color="#94a3b8" />
+                <stop offset="100%" stop-color="#cbd5e1" />
+              </linearGradient>
+              <linearGradient id="goldGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#fde047" />
+                <stop offset="100%" stop-color="#ca8a04" />
+              </linearGradient>
+              <linearGradient id="chipBlack" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#27272a" />
+                <stop offset="100%" stop-color="#09090b" />
+              </linearGradient>
+            </defs>
+
+            <rect x="6" y="6" width="828" height="488" rx="14" fill="url(#pcbBlue)" stroke="#1d4ed8" stroke-width="2.5" />
+            <text x="585" y="478" fill="rgba(255,255,255,0.28)" font-family="monospace" font-size="13" font-weight="bold">VILG1/G2 LA-9902P REV:1.0</text>
+
+            <g>
+              <circle cx="32" cy="32" r="13" fill="#eab308" stroke="#fef08a" stroke-width="1" />
+              <circle cx="32" cy="32" r="6" fill="#050a14" />
+              <text x="52" y="36" fill="#fde047" font-size="10.5" font-weight="bold">GND (Tornillo)</text>
+            </g>
+
+            <!-- Pistas de cobre -->
+            <path class="copper-trace" d="M 110 105 L 185 105 L 270 105 L 365 105 L 465 105" />
+            <path class="copper-trace" d="M 525 105 L 615 105 L 700 105 L 795 105" />
+            <path class="copper-trace" d="M 505 258 L 505 142 M 505 178 L 595 178 L 595 142" />
+            <path class="copper-trace" d="M 678 105 L 678 308 L 555 308" />
+            <path class="copper-trace" d="M 455 308 L 385 308 L 295 308 L 205 308 L 125 308" />
+
+            <!-- Flujos animados -->
+            <path id="tw-1-3" class="wire-flow" stroke="#f59e0b" d="M 110 105 L 270 105" />
+            <path id="tw-3-5" class="wire-flow" stroke="#f59e0b" d="M 270 105 L 465 105" />
+            <path id="tw-5-6" class="wire-flow" stroke="#f59e0b" d="M 525 105 L 575 105" />
+            <path id="tw-6-sys" class="wire-flow" stroke="#38bdf8" d="M 615 105 L 795 105" />
+            <path id="tw-gate" class="wire-flow" stroke="#a855f7" d="M 505 258 L 505 142 M 505 178 L 595 178 L 595 142" />
+            <path id="tw-sys-ic" class="wire-flow" stroke="#38bdf8" d="M 678 105 L 678 308 L 555 308" />
+            <path id="tw-ic-bat" class="wire-flow" stroke="#10b981" d="M 455 308 L 205 308" />
+            <path id="tw-bat-conn" class="wire-flow" stroke="#10b981" d="M 205 308 L 125 308" />
+
+            <rect x="720" y="52" width="102" height="36" rx="6" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5" />
+            <text x="771" y="67" fill="#fff" font-size="9.5" text-anchor="middle" font-weight="bold">AL SISTEMA</text>
+            <text x="771" y="80" fill="#38bdf8" font-size="9.5" text-anchor="middle">Riel B+ (19.5V)</text>
+
+            <!-- 1. JACK DC-IN -->
+            <g class="hotspot" id="th-1" onclick="inspectTrad('1')">
+              <rect class="selection-ring" x="18" y="64" width="96" height="82" />
+              <rect x="24" y="82" width="44" height="44" rx="4" fill="url(#metalGrad)" stroke="#475569" stroke-width="1.5" />
+              <circle cx="42" cy="104" r="13" fill="#1e293b" stroke="#64748b" stroke-width="2" />
+              <circle cx="42" cy="104" r="4" fill="#eab308" />
+              <path d="M 68 96 Q 88 92 106 96" stroke="#ef4444" stroke-width="3.5" fill="none" />
+              <path d="M 68 112 Q 88 116 106 112" stroke="#18181b" stroke-width="3.5" fill="none" />
+              <text x="64" y="76" class="silk-label" text-anchor="middle">JACK DC-IN</text>
+              <circle cx="24" cy="70" r="9" class="num-badge" /><text x="24" y="74" class="num-text">1</text>
+            </g>
+
+            <!-- 2. PJ101 -->
+            <g class="hotspot" id="th-2" onclick="inspectTrad('2')">
+              <rect class="selection-ring" x="118" y="68" width="66" height="74" />
+              <rect x="128" y="84" width="46" height="42" rx="3" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5" />
+              <rect x="132" y="90" width="12" height="5" fill="url(#goldGrad)" />
+              <rect x="132" y="99" width="12" height="5" fill="url(#goldGrad)" />
+              <rect x="132" y="108" width="12" height="5" fill="#94a3b8" />
+              <rect x="132" y="117" width="12" height="5" fill="#94a3b8" />
+              <text x="151" y="78" class="silk-label" text-anchor="middle">PJ101</text>
+              <circle cx="124" cy="72" r="9" class="num-badge" /><text x="124" y="76" class="num-text">2</text>
+            </g>
+
+            <!-- 3. PF101 -->
+            <g class="hotspot" id="th-3" onclick="inspectTrad('3')">
+              <rect class="selection-ring" x="200" y="72" width="76" height="66" />
+              <rect x="212" y="93" width="11" height="24" rx="2" fill="url(#metalGrad)" />
+              <rect x="253" y="93" width="11" height="24" rx="2" fill="url(#metalGrad)" />
+              <rect x="221" y="93" width="34" height="24" fill="#fefce8" stroke="#cbd5e1" stroke-width="1" />
+              <text x="238" y="108" fill="#1e293b" font-family="monospace" font-size="9" font-weight="bold" text-anchor="middle">10A</text>
+              <text x="238" y="84" class="silk-label" text-anchor="middle">PF101</text>
+              <circle cx="206" cy="76" r="9" class="num-badge" /><text x="206" y="80" class="num-text">3</text>
+            </g>
+
+            <!-- 4. PL101 -->
+            <g class="hotspot" id="th-4" onclick="inspectTrad('4')">
+              <rect class="selection-ring" x="294" y="70" width="82" height="70" />
+              <rect x="306" y="88" width="10" height="34" rx="2" fill="url(#metalGrad)" />
+              <rect x="354" y="88" width="10" height="34" rx="2" fill="url(#metalGrad)" />
+              <rect x="314" y="86" width="42" height="38" rx="4" fill="#334155" stroke="#64748b" stroke-width="1.5" />
+              <text x="335" y="80" class="silk-label" text-anchor="middle">PL101</text>
+              <circle cx="300" cy="74" r="9" class="num-badge" /><text x="300" y="78" class="num-text">4</text>
+            </g>
+
+            <!-- 5. PQ302 -->
+            <g class="hotspot" id="th-5" onclick="inspectTrad('5')">
+              <rect class="selection-ring" x="456" y="64" width="78" height="82" />
+              <rect x="472" y="77" width="6" height="9" fill="url(#metalGrad)" />
+              <rect x="484" y="77" width="6" height="9" fill="url(#metalGrad)" />
+              <rect x="496" y="77" width="6" height="9" fill="url(#metalGrad)" />
+              <rect x="508" y="77" width="6" height="9" fill="url(#metalGrad)" />
+              <rect x="472" y="124" width="6" height="9" fill="url(#metalGrad)" />
+              <rect x="484" y="124" width="6" height="9" fill="url(#metalGrad)" />
+              <rect x="496" y="124" width="6" height="9" fill="url(#metalGrad)" />
+              <rect x="508" y="124" width="6" height="9" fill="#c084fc" />
+              <rect x="466" y="85" width="58" height="40" rx="3" fill="url(#chipBlack)" stroke="#52525b" stroke-width="1.2" />
+              <text x="495" y="103" fill="#e4e4e7" font-family="monospace" font-size="8.5" text-anchor="middle">AON7410</text>
+              <text x="495" y="114" fill="#a855f7" font-family="monospace" font-size="7.5" text-anchor="middle">G:24.8V</text>
+              <text x="495" y="72" class="silk-label" text-anchor="middle">PQ302</text>
+              <circle cx="462" cy="68" r="9" class="num-badge" /><text x="462" y="72" class="num-text">5</text>
+            </g>
+
+            <!-- 6. PQ301 -->
+            <g class="hotspot" id="th-6" onclick="inspectTrad('6')">
+              <rect class="selection-ring" x="552" y="64" width="78" height="82" />
+              <rect x="568" y="77" width="6" height="9" fill="url(#metalGrad)" />
+              <rect x="580" y="77" width="6" height="9" fill="url(#metalGrad)" />
+              <rect x="592" y="77" width="6" height="9" fill="url(#metalGrad)" />
+              <rect x="604" y="77" width="6" height="9" fill="url(#metalGrad)" />
+              <rect x="568" y="124" width="6" height="9" fill="url(#metalGrad)" />
+              <rect x="580" y="124" width="6" height="9" fill="url(#metalGrad)" />
+              <rect x="592" y="124" width="6" height="9" fill="url(#metalGrad)" />
+              <rect x="604" y="124" width="6" height="9" fill="#c084fc" />
+              <rect x="562" y="85" width="58" height="40" rx="3" fill="url(#chipBlack)" stroke="#52525b" stroke-width="1.2" />
+              <text x="591" y="103" fill="#e4e4e7" font-family="monospace" font-size="8.5" text-anchor="middle">AON7410</text>
+              <text x="591" y="114" fill="#38bdf8" font-family="monospace" font-size="7.5" text-anchor="middle">RBFET</text>
+              <text x="591" y="72" class="silk-label" text-anchor="middle">PQ301</text>
+              <circle cx="558" cy="68" r="9" class="num-badge" /><text x="558" y="72" class="num-text">6</text>
+            </g>
+
+            <!-- 7. PR301 -->
+            <g class="hotspot" id="th-7" onclick="inspectTrad('7')">
+              <rect class="selection-ring" x="642" y="72" width="72" height="66" />
+              <rect x="652" y="92" width="10" height="26" rx="1.5" fill="url(#metalGrad)" />
+              <rect x="694" y="92" width="10" height="26" rx="1.5" fill="url(#metalGrad)" />
+              <rect x="660" y="92" width="36" height="26" fill="#18181b" stroke="#22c55e" stroke-width="1" />
+              <text x="678" y="108" fill="#f8fafc" font-family="monospace" font-size="9.5" font-weight="bold" text-anchor="middle">R010</text>
+              <text x="678" y="84" class="silk-label" text-anchor="middle">PR301</text>
+              <circle cx="648" cy="76" r="9" class="num-badge" /><text x="648" y="80" class="num-text">7</text>
+            </g>
+
+            <!-- 8. PU301 -->
+            <g class="hotspot" id="th-8" onclick="inspectTrad('8')">
+              <rect class="selection-ring" x="450" y="250" width="110" height="112" />
+              <rect x="469" y="270" width="72" height="72" rx="4" fill="url(#chipBlack)" stroke="#71717a" stroke-width="1.3" />
+              <circle cx="477" cy="278" r="2.5" fill="#a1a1aa" />
+              <text x="505" y="299" fill="#e4e4e7" font-family="monospace" font-size="9.5" font-weight="bold" text-anchor="middle">BQ24725</text>
+              <text x="505" y="312" fill="#a1a1aa" font-family="monospace" font-size="8" text-anchor="middle">TI 24J</text>
+              <text x="505" y="325" fill="#c084fc" font-family="monospace" font-size="7.5" text-anchor="middle">CHG PUMP</text>
+              <text x="505" y="260" class="silk-label" text-anchor="middle">PU301</text>
+              <circle cx="456" cy="256" r="9" class="num-badge" /><text x="456" y="260" class="num-text">8</text>
+            </g>
+
+            <!-- 9. PL302 -->
+            <g class="hotspot" id="th-9" onclick="inspectTrad('9')">
+              <rect class="selection-ring" x="342" y="268" width="84" height="80" />
+              <rect x="358" y="282" width="52" height="52" rx="6" fill="#27272a" stroke="#71717a" stroke-width="1.5" />
+              <text x="384" y="305" fill="#f8fafc" font-family="monospace" font-size="11" font-weight="bold" text-anchor="middle">4R7</text>
+              <text x="384" y="318" fill="#a1a1aa" font-family="monospace" font-size="8.5" text-anchor="middle">408</text>
+              <text x="384" y="277" class="silk-label" text-anchor="middle">PL302</text>
+              <circle cx="348" cy="272" r="9" class="num-badge" /><text x="348" y="276" class="num-text">9</text>
+            </g>
+
+            <!-- 10. PR324 -->
+            <g class="hotspot" id="th-10" onclick="inspectTrad('10')">
+              <rect class="selection-ring" x="256" y="274" width="74" height="68" />
+              <rect x="274" y="295" width="38" height="26" fill="#18181b" stroke="#10b981" stroke-width="1" />
+              <text x="293" y="311" fill="#f8fafc" font-family="monospace" font-size="9.5" font-weight="bold" text-anchor="middle">R010</text>
+              <text x="293" y="287" class="silk-label" text-anchor="middle">PR324</text>
+              <circle cx="262" cy="278" r="9" class="num-badge" /><text x="262" y="282" class="num-text">10</text>
+            </g>
+
+            <!-- 11. PF201 -->
+            <g class="hotspot" id="th-11" onclick="inspectTrad('11')">
+              <rect class="selection-ring" x="168" y="274" width="74" height="68" />
+              <rect x="186" y="295" width="38" height="26" fill="#fef3c7" stroke="#f59e0b" stroke-width="1" />
+              <text x="205" y="311" fill="#1e293b" font-family="monospace" font-size="9" font-weight="bold" text-anchor="middle">12A</text>
+              <text x="205" y="287" class="silk-label" text-anchor="middle">PF201</text>
+              <circle cx="174" cy="278" r="9" class="num-badge" /><text x="174" y="282" class="num-text">11</text>
+            </g>
+
+            <!-- 12. JBAT2 -->
+            <g class="hotspot" id="th-12" onclick="inspectTrad('12')">
+              <rect class="selection-ring" x="18" y="255" width="122" height="106" />
+              <rect x="24" y="272" width="110" height="76" rx="5" fill="#18181b" stroke="#52525b" stroke-width="2" />
+              <g fill="url(#goldGrad)">
+                <rect x="35" y="282" width="8" height="44" rx="1.5" />
+                <rect x="48" y="282" width="8" height="44" rx="1.5" />
+                <rect x="61" y="282" width="8" height="44" rx="1.5" />
+                <rect x="74" y="282" width="8" height="44" rx="1.5" />
+                <rect x="87" y="282" width="8" height="44" rx="1.5" />
+                <rect x="100" y="282" width="8" height="44" rx="1.5" />
+                <rect x="113" y="282" width="8" height="44" rx="1.5" />
+              </g>
+              <text x="79" y="340" fill="#e4e4e7" font-family="monospace" font-size="9.5" font-weight="bold" text-anchor="middle">JBAT2 (BAT)</text>
+              <circle cx="24" cy="260" r="10" class="num-badge" /><text x="24" y="264" class="num-text">12</text>
+            </g>
+
+            <rect x="24" y="388" width="792" height="68" rx="8" fill="rgba(9, 13, 22, 0.88)" stroke="#1e40af" />
+            <text x="42" y="410" fill="#38bdf8" font-size="11.5" font-weight="bold">💡 Circuito Tradicional (Entrada Directa 19.5V):</text>
+            <text x="42" y="429" fill="#cbd5e1" font-size="10.8">• Haz clic sobre cualquiera de los 12 componentes para medirlo con el multímetro.</text>
+            <text x="42" y="446" fill="#cbd5e1" font-size="10.8">• PU301 eleva el voltaje de Gate a 24.8V (Charge Pump) para abrir PQ302 y PQ301.</text>
+          </svg>
+        </div>
+
+        <div class="console-panel">
+          <div class="instrument-card">
+            <div class="instrument-title">
+              <span>📟 Multímetro Digital (Punta Negra a GND)</span>
+              <span id="trad-probe-label" style="color:#38bdf8;font-weight:700;">Punto: 1. Jack DC-IN</span>
+            </div>
+            <div class="multimeter-screen">
+              <div id="trad-mm-val" class="mm-value">19.50 V</div>
+              <div class="mm-sub">
+                <div id="trad-mm-mode-lbl">ESCALA: DC VOLTS (20V)</div>
+                <div id="trad-mm-status">Estado: Tensión Nominal</div>
+              </div>
+            </div>
+            <div class="mm-modes">
+              <button id="trad-btn-v" class="active" onclick="setMmMode('trad', 'V')">⚡ Voltaje DC (V)</button>
+              <button id="trad-btn-c" onclick="setMmMode('trad', 'C')">🔊 Continuidad / Ω</button>
+            </div>
+          </div>
+
+          <div class="instrument-card info-box">
+            <h3 id="trad-comp-title">1. Jack de Carga (DC-IN)</h3>
+            <p id="trad-comp-desc">
+              Punto de entrada físico donde se conecta la ficha cilíndrica del cargador. Entrega una tensión fija de ~19.5V desde el primer instante.
+            </p>
+            <div class="measure-tip" id="trad-comp-measure">
+              <strong>Cómo medirlo:</strong> Coloca la punta negra en un tornillo de la placa (GND) y la roja en el pin central positivo del conector. Debe marcar entre 19.0V y 20.0V.
+            </div>
+            <div class="fault-alert" id="trad-fault-banner" style="display:none;"></div>
+
+            <div id="trad-challenge-box" class="challenge-box">
+              <h4>🕵️ Desafío de Diagnóstico: Mide la placa e identifica el componente dañado</h4>
+              <div class="challenge-controls">
+                <select id="trad-guess-select">
+                  <option value="">-- Selecciona el componente culpable --</option>
+                  <option value="pf101_open">Fusible Principal PF101 abierto</option>
+                  <option value="no_charge_pump">Falla en señal Gate / Charge Pump (24.8V)</option>
+                  <option value="pq302_short">MOSFET de entrada PQ302 en corto</option>
+                  <option value="pu301_dead">IC de Carga PU301 (BQ24725A) dañado</option>
+                  <option value="pf201_open">Fusible de Batería PF201 abierto</option>
+                </select>
+                <button class="btn-primary" onclick="checkChallenge('trad')">Verificar</button>
+              </div>
+              <p id="trad-chal-feedback" style="margin-top:8px;font-weight:700;font-size:0.85rem;"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- MÓDULO 2: CIRCUITO MODERNO USB-C POWER DELIVERY (PD) HASTA BATERÍA    -->
+    <!-- ===================================================================== -->
+    <section id="modulo-usbc" class="simulator-section">
+      <div class="section-header">
+        <div class="section-title">
+          <h2>🔋 Bloque 2: Circuito Moderno USB-C Power Delivery (PD) hasta Batería <span class="badge badge-usbc">5V → 20V → VSYS → VBAT</span></h2>
+        </div>
+        <button id="btn-chal-usbc" class="btn-challenge" onclick="toggleChallenge('usbc')">🎯 Modo Desafío USB-C</button>
+      </div>
+
+      <!-- REPRODUCTOR INTERACTIVO DE NEGOCIACIÓN (7 PASOS HASTA BATERÍA) -->
+      <div class="video-negotiation-box">
+        <div class="video-top-bar">
+          <div class="video-title-area">
+            <span class="live-pill">▶ Video Interactivo</span>
+            <h3>Secuencia Completa USB-C PD (Desde enchufar el cable hasta cargar la batería)</h3>
+          </div>
+          <div class="video-transport">
+            <button onclick="prevNegStep()">⏮ Anterior</button>
+            <button id="btn-play-neg" class="play-btn" onclick="togglePlayNeg()">▶ Reproducir Secuencia</button>
+            <button onclick="nextNegStep()">Siguiente ⏭</button>
+          </div>
+        </div>
+
+        <div class="video-progress-track">
+          <div id="neg-progress-bar" class="video-progress-fill"></div>
+        </div>
+
+        <div class="timeline-steps">
+          <div class="t-step active" id="nstep-0" onclick="setNegStep(0)">
+            <span class="step-num">Paso 1 • 0:00</span>
+            <span class="step-name">Resistencias 512 (5.1kΩ) en CC1/CC2</span>
+          </div>
+          <div class="t-step" id="nstep-1" onclick="setNegStep(1)">
+            <span class="step-num">Paso 2 • 0:05</span>
+            <span class="step-name">Ingreso 5V en VBUS → Alimenta PD</span>
+          </div>
+          <div class="t-step" id="nstep-2" onclick="setNegStep(2)">
+            <span class="step-num">Paso 3 • 0:10</span>
+            <span class="step-name">Negociación Digital por CC1/CC2</span>
+          </div>
+          <div class="t-step" id="nstep-3" onclick="setNegStep(3)">
+            <span class="step-num">Paso 4 • 0:15</span>
+            <span class="step-name">VBUS sube a 20V (Llega a Q1)</span>
+          </div>
+          <div class="t-step" id="nstep-4" onclick="setNegStep(4)">
+            <span class="step-num">Paso 5 • 0:20</span>
+            <span class="step-name">Gate 25V en Pin 4 (Q1 &amp; Q2 SO-8)</span>
+          </div>
+          <div class="t-step" id="nstep-5" onclick="setNegStep(5)">
+            <span class="step-num">Paso 6 • 0:25</span>
+            <span class="step-name">R010 → BQ257xx + Bobina L1 → VSYS</span>
+          </div>
+          <div class="t-step" id="nstep-6" onclick="setNegStep(6)">
+            <span class="step-num">Paso 7 • 0:30</span>
+            <span class="step-name">BATFET (BGATE) → R010 → Batería JBAT</span>
+          </div>
+        </div>
+
+        <div class="video-caption-bar">
+          <div id="neg-caption-text" class="video-caption-text">
+            <strong>1. Detección Física:</strong> Al conectar el cable USB-C, las resistencias <strong>512 (5.1 kΩ)</strong> en <strong>CC1 y CC2</strong> le avisan al cargador que hay una laptop conectada.
+          </div>
+          <div id="neg-caption-badge" class="video-caption-badge">ESTADO 1: CC1/CC2 DETECTADO</div>
+        </div>
+      </div>
+
+      <!-- BARRA DE CONTROLES DE SIMULACIÓN -->
+      <div class="controls-bar">
+        <div class="control-group">
+          <label>Modo de Operación USB-C</label>
+          <select id="usbc-power-mode" onchange="updateUsbcSim()">
+            <option value="charging">Cargador PD + Batería (Negociado 20V)</option>
+            <option value="ac_only">Solo Cargador PD (Negociado 20V)</option>
+            <option value="bat_only">Solo Batería (Sin Cargador USB-C)</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label>Las 6 Fallas Clásicas de Taller (USB-C + Etapa Batería)</label>
+          <select id="usbc-fault-select" onchange="updateUsbcSim()">
+            <option value="none">✅ Normal: Negocia 20V y Carga Batería</option>
+            <option value="5v_low">❌ Caso 1: 5V con Bajo Consumo (0.01A) - Sin Negociación PD</option>
+            <option value="5v_high">❌ Caso 2: 5V con Sobreconsumo (1.35A) - Corto en VBUS/PD</option>
+            <option value="20v_low">❌ Caso 3: 20V con Bajo Consumo (0.02A) - Bloqueo en Q1/Q2 o Charger</option>
+            <option value="20v_high">❌ Caso 4: 20V con Sobreconsumo (2.40A) - Corto en VSYS / Buck-Boost</option>
+            <option value="batfet_open">❌ Caso 5: Enciende con USB-C (20V) pero NO Carga ni Detecta Batería (BATFET)</option>
+            <option value="smbus_dead">❌ Caso 6: Batería al 0% o Sin Carga (Falla Bus SMBus SDA/SCL)</option>
+          </select>
+        </div>
+
+        <div class="control-group">
+          <label>Acción Rápida</label>
+          <button id="btn-rand-usbc" class="btn-primary" onclick="randomFault('usbc')">🎲 Simular Falla USB-C Aleatoria</button>
+        </div>
+      </div>
+
+      <div class="workspace">
+        <!-- ESQUEMA INTERACTIVO COMPLETO CON PATAS EN TODOS LOS CHIPS Y JBAT A LA IZQUIERDA -->
+        <div class="board-container">
+          <div class="board-legend">
+            <div class="legend-item"><span class="dot" style="background:#10b981"></span> Potencia (VBUS 20V → VSYS → VBAT)</div>
+            <div class="legend-item"><span class="dot" style="background:#38bdf8"></span> Líneas CC1 / CC2 y Resistencias 512</div>
+            <div class="legend-item"><span class="dot" style="background:#f59e0b"></span> Gate 25V (Q1/Q2) y BGATE (BATFET)</div>
+            <div class="legend-item"><span class="dot" style="background:#ec4899"></span> Bus Digital I2C / IRQ# / SMBus (SDA/SCL)</div>
+          </div>
+
+          <svg class="pcb-svg" viewBox="0 0 840 780">
+            <rect x="6" y="6" width="828" height="768" rx="14" fill="#061d19" stroke="#10b981" stroke-width="2" />
+            <text x="18" y="26" fill="#34d399" font-family="monospace" font-size="10.5" font-weight="bold">HAZ CLIC EN CUALQUIER PATA DE LOS CHIPS (CC1/CC2, VBUS, Q1/Q2, BQ257xx, BATFET, JBAT, KBC/EC)</text>
+
+            <!-- ========================================================= -->
+            <!-- PISTAS DE COBRE BASE                                      -->
+            <!-- ========================================================= -->
+            <path class="copper-trace" d="M 412 108 L 412 140 L 665 140 L 665 205 L 615 205" />
+            <path class="copper-trace" d="M 326 108 L 326 158 L 222 158 L 222 192" />
+            <path class="copper-trace" d="M 356 108 L 356 170 L 248 170 L 248 192" />
+            <path class="copper-trace" d="M 222 158 L 95 158 L 95 174" />
+            <path class="copper-trace" d="M 248 170 L 130 170 L 130 174" />
+            <path class="copper-trace" d="M 412 140 L 274 140 L 274 192" />
+            <path class="copper-trace" d="M 192 280 L 192 302 L 82 302 L 82 385 L 448 385" />
+            <path class="copper-trace" d="M 82 302 L 82 240 L 448 240" />
+            <path class="copper-trace" d="M 448 205 L 415 205 L 415 348 L 448 348" />
+            <path class="copper-trace" d="M 615 348 L 665 348 L 665 432 L 545 432" />
+            <path class="copper-trace" d="M 545 462 L 605 462 L 735 462" />
+            <path class="copper-trace" d="M 735 462 L 795 462" />
+            <path class="copper-trace" d="M 735 462 L 735 555 L 555 555" />
+            <path class="copper-trace" d="M 390 555 L 335 555 L 250 555 L 180 555" />
+            <path class="copper-trace" d="M 465 496 L 465 516 L 390 516 L 390 582" />
+            <path class="copper-trace" d="M 220 280 L 220 452 L 385 452" />
+            <path class="copper-trace" d="M 236 280 L 236 680 L 365 680" />
+            <path class="copper-trace" d="M 435 496 L 435 655" />
+            <path class="copper-trace" d="M 180 580 L 205 580 L 205 712 L 365 712" />
+            <path class="copper-trace" d="M 180 600 L 195 600 L 195 628 L 365 628 L 365 478 L 385 478" />
+
+            <!-- ========================================================= -->
+            <!-- FLUJOS ANIMADOS                                           -->
+            <!-- ========================================================= -->
+            <path id="uw-cc-rd" class="wire-flow" stroke="#38bdf8" d="M 326 108 L 326 158 L 95 158 L 95 174 M 356 108 L 356 170 L 130 170 L 130 174" />
+            <path id="uw-vbus-pd" class="wire-flow" stroke="#f59e0b" d="M 412 108 L 412 140 L 274 140 L 274 192" />
+            <path id="uw-cc-pd" class="wire-flow" stroke="#a855f7" d="M 326 158 L 222 158 L 222 192 M 356 170 L 248 170 L 248 192" />
+            <path id="uw-vbus-q1" class="wire-flow" stroke="#10b981" d="M 412 108 L 412 140 L 665 140 L 665 205 L 615 205" />
+            <path id="uw-gate-25v" class="wire-flow" stroke="#f59e0b" d="M 192 280 L 192 302 L 82 302 L 82 240 L 448 240 M 82 302 L 82 385 L 448 385" />
+            <path id="uw-q1-q2" class="wire-flow" stroke="#10b981" d="M 448 205 L 415 205 L 415 348 L 448 348" />
+            <path id="uw-q2-chg" class="wire-flow" stroke="#10b981" d="M 615 348 L 665 348 L 665 432 L 545 432" />
+            <path id="uw-buck-vsys" class="wire-flow" stroke="#10b981" d="M 545 462 L 795 462" />
+            <path id="uw-vsys-bat" class="wire-flow" stroke="#10b981" d="M 735 462 L 735 555 L 555 555 M 390 555 L 180 555" />
+            <path id="uw-bgate" class="wire-flow" stroke="#f59e0b" d="M 465 496 L 465 516 L 390 516 L 390 582" />
+            <path id="uw-i2c" class="wire-flow" stroke="#ec4899" d="M 220 280 L 220 452 L 385 452 M 236 280 L 236 680 L 365 680" />
+            <path id="uw-smbus" class="wire-flow" stroke="#ec4899" d="M 180 580 L 205 580 L 205 712 L 365 712 M 180 600 L 195 600 L 195 628 L 365 628 L 365 478 L 385 478" />
+            <path id="uw-chg-kbc" class="wire-flow" stroke="#38bdf8" d="M 435 496 L 435 655" />
+
+            <!-- ========================================================= -->
+            <!-- 1. RECEPTÁCULO USB-C Y SUS PATAS (CC1, CC2, VBUS)         -->
+            <!-- ========================================================= -->
+            <g class="hotspot" id="uh-1" onclick="inspectUsbc('1')">
+              <rect class="selection-ring" x="284" y="34" width="172" height="84" />
+              <rect x="294" y="42" width="152" height="50" rx="8" fill="url(#metalGrad)" stroke="#475569" stroke-width="2" />
+              <rect x="308" y="53" width="124" height="26" rx="13" fill="#090d16" stroke="#64748b" stroke-width="1.5" />
+              <rect x="318" y="64" width="104" height="4" rx="2" fill="#eab308" />
+              <text x="370" y="50" fill="#0f172a" font-family="monospace" font-size="9" font-weight="bold" text-anchor="middle">USB-C RECEPTACLE</text>
+
+              <g class="pin-target" id="pin-cc1" onclick="event.stopPropagation(); inspectPin('cc1')">
+                <rect x="320" y="92" width="12" height="16" rx="2" fill="#38bdf8" stroke="#0f172a" />
+                <text x="320" y="120" fill="#7dd3fc" font-family="monospace" font-size="9" font-weight="bold" text-anchor="middle">CC1</text>
+              </g>
+
+              <g class="pin-target" id="pin-cc2" onclick="event.stopPropagation(); inspectPin('cc2')">
+                <rect x="350" y="92" width="12" height="16" rx="2" fill="#38bdf8" stroke="#0f172a" />
+                <text x="356" y="120" fill="#7dd3fc" font-family="monospace" font-size="9" font-weight="bold" text-anchor="middle">CC2</text>
+              </g>
+
+              <g class="pin-target" id="pin-vbus" onclick="event.stopPropagation(); inspectPin('vbus')">
+                <rect x="404" y="92" width="16" height="16" rx="2" fill="#10b981" stroke="#0f172a" />
+                <text x="415" y="120" fill="#34d399" font-family="monospace" font-size="9.5" font-weight="bold" text-anchor="middle">VBUS</text>
+              </g>
+            </g>
+
+            <!-- ========================================================= -->
+            <!-- 2. RESISTENCIAS Rd 5.1kΩ (SERIGRAFÍA 512)                 -->
+            <!-- ========================================================= -->
+            <g class="hotspot" id="uh-2" onclick="inspectUsbc('2')">
+              <rect class="selection-ring" x="62" y="168" width="96" height="60" />
+              <g class="pin-target" id="pin-rd512" onclick="event.stopPropagation(); inspectPin('rd512')">
+                <rect x="86" y="174" width="18" height="28" rx="2" fill="#18181b" stroke="#eab308" stroke-width="1.2" />
+                <text x="95" y="191" fill="#fff" font-family="monospace" font-size="8" font-weight="bold" text-anchor="middle">512</text>
+                <rect x="121" y="174" width="18" height="28" rx="2" fill="#18181b" stroke="#eab308" stroke-width="1.2" />
+                <text x="130" y="191" fill="#fff" font-family="monospace" font-size="8" font-weight="bold" text-anchor="middle">512</text>
+                <line x1="95" y1="202" x2="95" y2="214" stroke="#94a3b8" stroke-width="1.5" />
+                <line x1="87" y1="214" x2="103" y2="214" stroke="#94a3b8" stroke-width="1.5" />
+                <line x1="130" y1="202" x2="130" y2="214" stroke="#94a3b8" stroke-width="1.5" />
+                <line x1="122" y1="214" x2="138" y2="214" stroke="#94a3b8" stroke-width="1.5" />
+                <text x="64" y="193" fill="#fde047" font-family="monospace" font-size="8.5" font-weight="bold">Rd</text>
+                <text x="64" y="203" fill="#94a3b8" font-family="monospace" font-size="8">5.1kΩ</text>
+              </g>
+            </g>
+
+            <!-- ========================================================= -->
+            <!-- 3. CONTROLADOR USB-PD (QFN-32 + PATAS CLICABLES)          -->
+            <!-- ========================================================= -->
+            <g class="hotspot" id="uh-3" onclick="inspectUsbc('3')">
+              <rect class="selection-ring" x="172" y="186" width="132" height="102" />
+              <rect x="184" y="200" width="108" height="72" rx="5" fill="url(#chipBlack)" stroke="#c084fc" stroke-width="1.6" />
+              <circle cx="194" cy="210" r="2.5" fill="#c084fc" />
+              <text x="238" y="232" fill="#f3e8ff" font-family="monospace" font-size="10" font-weight="bold" text-anchor="middle">CONTROLADOR</text>
+              <text x="238" y="245" fill="#38bdf8" font-family="monospace" font-size="10" font-weight="bold" text-anchor="middle">USB-PD</text>
+              <text x="238" y="260" fill="#94a3b8" font-family="monospace" font-size="8" text-anchor="middle">QFN-32 • HV GATE</text>
+
+              <g class="pin-target" id="pin-pd-cc" onclick="event.stopPropagation(); inspectPin('pd_cc')">
+                <rect x="218" y="191" width="8" height="9" fill="#a855f7" />
+                <rect x="244" y="191" width="8" height="9" fill="#a855f7" />
+              </g>
+              <g class="pin-target" id="pin-pd-vin" onclick="event.stopPropagation(); inspectPin('pd_vin')">
+                <rect x="270" y="191" width="8" height="9" fill="#f59e0b" />
+              </g>
+              <g class="pin-target" id="pin-pd-gate" onclick="event.stopPropagation(); inspectPin('pd_gate')">
+                <rect x="188" y="272" width="9" height="10" fill="#f59e0b" />
+              </g>
+              <g class="pin-target" id="pin-pd-i2c" onclick="event.stopPropagation(); inspectPin('pd_i2c')">
+                <rect x="216" y="272" width="8" height="10" fill="#ec4899" />
+                <rect x="232" y="272" width="8" height="10" fill="#ec4899" />
+              </g>
+            </g>
+
+            <!-- Etiqueta flotante GATE 25V -->
+            <g class="pin-target" id="pin-gate25-lbl" onclick="inspectPin('q_gate')">
+              <rect x="16" y="314" width="134" height="34" rx="6" fill="#271c0a" stroke="#f59e0b" stroke-width="1.5" />
+              <text x="83" y="329" fill="#fbbf24" font-family="monospace" font-size="9.5" font-weight="bold" text-anchor="middle">GATE 25V EN</text>
+              <text x="83" y="341" fill="#fde68a" font-family="monospace" font-size="9" text-anchor="middle">PIN 4 (Q1 &amp; Q2)</text>
+            </g>
+
+            <!-- ========================================================= -->
+            <!-- 5A. MOSFET Q1 (SO-8 CON PATAS CLICABLES)                  -->
+            <!-- ========================================================= -->
+            <g class="hotspot" id="uh-5" onclick="inspectUsbc('5')">
+              <rect class="selection-ring" x="440" y="168" width="184" height="92" />
+              <text x="532" y="163" class="silk-label" text-anchor="middle">MOSFET Q1 (SO-8)</text>
+              <rect x="464" y="174" width="136" height="78" rx="4" fill="url(#chipBlack)" stroke="#64748b" stroke-width="1.5" />
+
+              <g class="pin-target" id="pin-q1-s" onclick="event.stopPropagation(); inspectPin('q1_source')">
+                <rect x="448" y="182" width="16" height="9" fill="url(#metalGrad)" />
+                <rect x="448" y="197" width="16" height="9" fill="url(#metalGrad)" />
+                <rect x="448" y="212" width="16" height="9" fill="url(#metalGrad)" />
+                <text x="482" y="190" fill="#e2e8f0" font-family="monospace" font-size="9.5" font-weight="bold">1•S</text>
+                <text x="482" y="205" fill="#e2e8f0" font-family="monospace" font-size="9.5" font-weight="bold">2•S</text>
+                <text x="482" y="220" fill="#e2e8f0" font-family="monospace" font-size="9.5" font-weight="bold">3•S</text>
+              </g>
+
+              <g class="pin-target" id="pin-q1-g" onclick="event.stopPropagation(); inspectPin('q_gate')">
+                <rect x="448" y="235" width="16" height="10" fill="#f59e0b" />
+                <text x="482" y="243" fill="#fbbf24" font-family="monospace" font-size="9.5" font-weight="bold">4•G</text>
+              </g>
+
+              <g class="pin-target" id="pin-q1-d" onclick="event.stopPropagation(); inspectPin('q1_drain')">
+                <rect x="600" y="182" width="16" height="9" fill="#10b981" />
+                <rect x="600" y="197" width="16" height="9" fill="#10b981" />
+                <rect x="600" y="212" width="16" height="9" fill="#10b981" />
+                <rect x="600" y="235" width="16" height="10" fill="#10b981" />
+                <text x="582" y="190" fill="#6ee7b7" font-family="monospace" font-size="9.5" font-weight="bold" text-anchor="end">D•8</text>
+                <text x="582" y="205" fill="#6ee7b7" font-family="monospace" font-size="9.5" font-weight="bold" text-anchor="end">D•7</text>
+                <text x="582" y="220" fill="#6ee7b7" font-family="monospace" font-size="9.5" font-weight="bold" text-anchor="end">D•6</text>
+                <text x="582" y="243" fill="#6ee7b7" font-family="monospace" font-size="9.5" font-weight="bold" text-anchor="end">D•5</text>
+              </g>
+
+              <polygon points="538,205 538,223 522,214" fill="none" stroke="#34d399" stroke-width="1.8" />
+              <line x1="522" y1="205" x2="522" y2="223" stroke="#34d399" stroke-width="1.8" />
+              <text x="532" y="236" fill="#94a3b8" font-family="monospace" font-size="8" text-anchor="middle">S → D</text>
+            </g>
+
+            <text x="382" y="280" fill="#cbd5e1" font-family="monospace" font-size="9.5" font-weight="bold">S1=S2</text>
+
+            <!-- ========================================================= -->
+            <!-- 5B. MOSFET Q2 (SO-8 CON PATAS CLICABLES)                  -->
+            <!-- ========================================================= -->
+            <g class="hotspot" id="uh-5b" onclick="inspectUsbc('5')">
+              <rect class="selection-ring" x="440" y="312" width="184" height="92" />
+              <text x="532" y="307" class="silk-label" text-anchor="middle">MOSFET Q2 (SO-8)</text>
+              <rect x="464" y="318" width="136" height="78" rx="4" fill="url(#chipBlack)" stroke="#64748b" stroke-width="1.5" />
+
+              <g class="pin-target" id="pin-q2-s" onclick="event.stopPropagation(); inspectPin('q2_source')">
+                <rect x="448" y="326" width="16" height="9" fill="url(#metalGrad)" />
+                <rect x="448" y="341" width="16" height="9" fill="url(#metalGrad)" />
+                <rect x="448" y="356" width="16" height="9" fill="url(#metalGrad)" />
+                <text x="482" y="334" fill="#e2e8f0" font-family="monospace" font-size="9.5" font-weight="bold">1•S</text>
+                <text x="482" y="349" fill="#e2e8f0" font-family="monospace" font-size="9.5" font-weight="bold">2•S</text>
+                <text x="482" y="364" fill="#e2e8f0" font-family="monospace" font-size="9.5" font-weight="bold">3•S</text>
+              </g>
+
+              <g class="pin-target" id="pin-q2-g" onclick="event.stopPropagation(); inspectPin('q_gate')">
+                <rect x="448" y="380" width="16" height="10" fill="#f59e0b" />
+                <text x="482" y="388" fill="#fbbf24" font-family="monospace" font-size="9.5" font-weight="bold">4•G</text>
+              </g>
+
+              <g class="pin-target" id="pin-q2-d" onclick="event.stopPropagation(); inspectPin('q2_drain')">
+                <rect x="600" y="326" width="16" height="9" fill="#10b981" />
+                <rect x="600" y="341" width="16" height="9" fill="#10b981" />
+                <rect x="600" y="356" width="16" height="9" fill="#10b981" />
+                <rect x="600" y="380" width="16" height="10" fill="#10b981" />
+                <text x="582" y="334" fill="#6ee7b7" font-family="monospace" font-size="9.5" font-weight="bold" text-anchor="end">D•8</text>
+                <text x="582" y="349" fill="#6ee7b7" font-family="monospace" font-size="9.5" font-weight="bold" text-anchor="end">D•7</text>
+                <text x="582" y="364" fill="#6ee7b7" font-family="monospace" font-size="9.5" font-weight="bold" text-anchor="end">D•6</text>
+                <text x="582" y="388" fill="#6ee7b7" font-family="monospace" font-size="9.5" font-weight="bold" text-anchor="end">D•5</text>
+              </g>
+
+              <polygon points="522,349 522,367 538,358" fill="none" stroke="#f59e0b" stroke-width="1.8" />
+              <line x1="538" y1="349" x2="538" y2="367" stroke="#f59e0b" stroke-width="1.8" />
+              <text x="532" y="380" fill="#94a3b8" font-family="monospace" font-size="8" text-anchor="middle">S ← D</text>
+            </g>
+
+            <!-- ========================================================= -->
+            <!-- 7. R-SENSE 10mΩ (R010 ENTRADA)                            -->
+            <!-- ========================================================= -->
+            <g class="hotspot" id="uh-7" onclick="inspectUsbc('7')">
+              <rect class="selection-ring" x="626" y="376" width="78" height="50" />
+              <g class="pin-target" id="pin-r010" onclick="event.stopPropagation(); inspectPin('r010')">
+                <rect x="634" y="394" width="10" height="22" fill="url(#metalGrad)" />
+                <rect x="686" y="394" width="10" height="22" fill="url(#metalGrad)" />
+                <rect x="642" y="394" width="46" height="22" fill="#18181b" stroke="#eab308" stroke-width="1.3" />
+                <text x="665" y="408" fill="#fff" font-family="monospace" font-size="9" font-weight="bold" text-anchor="middle">R010</text>
+                <text x="665" y="387" fill="#fde047" font-family="monospace" font-size="8" text-anchor="middle">R-SENSE 10mΩ</text>
+              </g>
+            </g>
+
+            <!-- ========================================================= -->
+            <!-- 6. IC CHARGER BUCK-BOOST (BQ257xx CON PATAS DE CARGA)     -->
+            <!-- ========================================================= -->
+            <g class="hotspot" id="uh-6" onclick="inspectUsbc('6')">
+              <rect class="selection-ring" x="372" y="416" width="186" height="86" />
+              <rect x="386" y="422" width="158" height="74" rx="5" fill="url(#chipBlack)" stroke="#38bdf8" stroke-width="1.6" />
+              <text x="465" y="446" fill="#fff" font-family="monospace" font-size="10.5" font-weight="bold" text-anchor="middle">IC CHARGER</text>
+              <text x="465" y="460" fill="#38bdf8" font-family="monospace" font-size="9.5" font-weight="bold" text-anchor="middle">BQ257xx</text>
+              <text x="465" y="473" fill="#94a3b8" font-family="monospace" font-size="7.5" text-anchor="middle">QFN-32 • BUCK-BOOST</text>
+
+              <g class="pin-target" id="pin-chg-acn" onclick="event.stopPropagation(); inspectPin('chg_acn')">
+                <rect x="544" y="428" width="12" height="9" fill="#10b981" />
+                <text x="540" y="436" fill="#6ee7b7" font-family="monospace" font-size="7.5" text-anchor="end">ACN/P</text>
+              </g>
+              <g class="pin-target" id="pin-chg-sw" onclick="event.stopPropagation(); inspectPin('chg_sw')">
+                <rect x="544" y="458" width="12" height="9" fill="#f59e0b" />
+                <text x="540" y="466" fill="#fbbf24" font-family="monospace" font-size="7.5" text-anchor="end">SW1/2</text>
+              </g>
+
+              <g class="pin-target" id="pin-chg-i2c" onclick="event.stopPropagation(); inspectPin('i2c_bus')">
+                <rect x="374" y="448" width="12" height="9" fill="#ec4899" />
+                <text x="390" y="456" fill="#f472b6" font-family="monospace" font-size="7.5">I2C</text>
+              </g>
+              <g class="pin-target" id="pin-chg-srp" onclick="event.stopPropagation(); inspectPin('chg_srp')">
+                <rect x="374" y="474" width="12" height="9" fill="#ec4899" />
+                <text x="390" y="482" fill="#f472b6" font-family="monospace" font-size="7.5">SDA/L</text>
+              </g>
+
+              <g class="pin-target" id="pin-chg-ok" onclick="event.stopPropagation(); inspectPin('chg_ok')">
+                <rect x="430" y="496" width="10" height="10" fill="#38bdf8" />
+                <text x="424" y="492" fill="#7dd3fc" font-family="monospace" font-size="7.5" text-anchor="middle">CHRG_OK</text>
+              </g>
+              <g class="pin-target" id="pin-chg-bgate" onclick="event.stopPropagation(); inspectPin('chg_bgate')">
+                <rect x="460" y="496" width="10" height="10" fill="#f59e0b" />
+                <text x="484" y="492" fill="#fbbf24" font-family="monospace" font-size="7.5" text-anchor="middle">BGATE</text>
+              </g>
+            </g>
+
+            <!-- ========================================================= -->
+            <!-- 9. ETAPA BUCK-BOOST + BOBINA L1 (2.2µH) -> NODO VSYS      -->
+            <!-- ========================================================= -->
+            <g class="hotspot" id="uh-9" onclick="inspectUsbc('9')">
+              <rect class="selection-ring" x="576" y="422" width="128" height="72" />
+              <g class="pin-target" id="pin-buck-l1" onclick="event.stopPropagation(); inspectPin('buck_l1')">
+                <rect x="584" y="434" width="112" height="52" rx="6" fill="#1e293b" stroke="#f59e0b" stroke-width="1.5" />
+                <text x="640" y="450" fill="#fbbf24" font-family="monospace" font-size="8.5" font-weight="bold" text-anchor="middle">PUENTE-H + L1</text>
+                <text x="640" y="464" fill="#fff" font-family="monospace" font-size="9.5" font-weight="bold" text-anchor="middle">2.2µH (BUCK-BOOST)</text>
+                <text x="640" y="477" fill="#34d399" font-family="monospace" font-size="8" text-anchor="middle">Regula 20V → VSYS</text>
+              </g>
+            </g>
+
+            <!-- NODO VSYS -> AL SISTEMA -->
+            <g class="pin-target" id="pin-vsys-node" onclick="inspectPin('vsys_node')">
+              <circle cx="735" cy="462" r="8" fill="#10b981" stroke="#fff" stroke-width="2" />
+              <text x="735" y="446" fill="#34d399" font-family="monospace" font-size="9.5" font-weight="bold" text-anchor="middle">VSYS</text>
+              <rect x="752" y="438" width="76" height="44" rx="5" fill="#0f172a" stroke="#38bdf8" stroke-width="1.3" />
+              <text x="790" y="456" fill="#fff" font-family="monospace" font-size="8.5" font-weight="bold" text-anchor="middle">AL SISTEMA</text>
+              <text x="790" y="470" fill="#38bdf8" font-family="monospace" font-size="8" text-anchor="middle">3.3V / 5V</text>
+            </g>
+
+            <!-- ========================================================= -->
+            <!-- 12. CONECTOR DE BATERÍA (JBAT) A LA IZQUIERDA             -->
+            <!-- ========================================================= -->
+            <g class="hotspot" id="uh-12" onclick="inspectUsbc('12')">
+              <rect class="selection-ring" x="18" y="514" width="168" height="114" />
+              <g class="pin-target" id="pin-jbat" onclick="event.stopPropagation(); inspectPin('jbat')">
+                <rect x="26" y="522" width="152" height="98" rx="6" fill="#18181b" stroke="#eab308" stroke-width="1.8" />
+                <text x="102" y="538" fill="#fde047" font-family="monospace" font-size="9.5" font-weight="bold" text-anchor="middle">CONECTOR BATERÍA</text>
+                <text x="102" y="550" fill="#34d399" font-family="monospace" font-size="8.5" font-weight="bold" text-anchor="middle">JBAT (IZQUIERDA)</text>
+
+                <rect x="164" y="550" width="16" height="10" rx="1.5" fill="url(#goldGrad)" />
+                <text x="158" y="558" fill="#fde047" font-family="monospace" font-size="8" font-weight="bold" text-anchor="end">VBAT+ (12.6V)</text>
+
+                <rect x="164" y="575" width="16" height="10" rx="1.5" fill="#ec4899" />
+                <text x="158" y="583" fill="#f472b6" font-family="monospace" font-size="8" font-weight="bold" text-anchor="end">SDA (SMBus)</text>
+
+                <rect x="164" y="595" width="16" height="10" rx="1.5" fill="#ec4899" />
+                <text x="158" y="603" fill="#f472b6" font-family="monospace" font-size="8" font-weight="bold" text-anchor="end">SCL (Clock)</text>
+              </g>
+            </g>
+
+            <!-- ========================================================= -->
+            <!-- 11. SHUNT DE BATERÍA R010 (ENTRE JBAT Y BATFET)           -->
+            <!-- ========================================================= -->
+            <g class="hotspot" id="uh-11" onclick="inspectUsbc('11')">
+              <rect class="selection-ring" x="236" y="524" width="96" height="58" />
+              <g class="pin-target" id="pin-r010-bat" onclick="event.stopPropagation(); inspectPin('r010_bat')">
+                <rect x="248" y="543" width="10" height="24" fill="url(#metalGrad)" />
+                <rect x="310" y="543" width="10" height="24" fill="url(#metalGrad)" />
+                <rect x="256" y="543" width="56" height="24" fill="#18181b" stroke="#10b981" stroke-width="1.3" />
+                <text x="284" y="558" fill="#fff" font-family="monospace" font-size="9.5" font-weight="bold" text-anchor="middle">R010</text>
+                <text x="284" y="535" fill="#6ee7b7" font-family="monospace" font-size="8" text-anchor="middle">SHUNT BATERÍA</text>
+              </g>
+            </g>
+
+            <!-- ========================================================= -->
+            <!-- 10. MOSFET BATFET (SO-8 CON PATAS DRAIN, SOURCE Y GATE)   -->
+            <!-- ========================================================= -->
+            <g class="hotspot" id="uh-10" onclick="inspectUsbc('10')">
+              <rect class="selection-ring" x="382" y="514" width="182" height="90" />
+              <text x="473" y="510" class="silk-label" text-anchor="middle">BATFET (SO-8 • VSYS ↔ VBAT)</text>
+              <rect x="406" y="520" width="134" height="76" rx="4" fill="url(#chipBlack)" stroke="#10b981" stroke-width="1.5" />
+
+              <g class="pin-target" id="pin-batfet-s" onclick="event.stopPropagation(); inspectPin('batfet_s')">
+                <rect x="390" y="528" width="16" height="9" fill="url(#metalGrad)" />
+                <rect x="390" y="543" width="16" height="9" fill="url(#metalGrad)" />
+                <rect x="390" y="558" width="16" height="9" fill="url(#metalGrad)" />
+                <text x="424" y="536" fill="#e2e8f0" font-family="monospace" font-size="9" font-weight="bold">1•S</text>
+                <text x="424" y="551" fill="#e2e8f0" font-family="monospace" font-size="9" font-weight="bold">2•S</text>
+                <text x="424" y="566" fill="#e2e8f0" font-family="monospace" font-size="9" font-weight="bold">3•S</text>
+              </g>
+
+              <g class="pin-target" id="pin-batfet-g" onclick="event.stopPropagation(); inspectPin('chg_bgate')">
+                <rect x="390" y="578" width="16" height="10" fill="#f59e0b" />
+                <text x="424" y="586" fill="#fbbf24" font-family="monospace" font-size="9" font-weight="bold">4•G</text>
+              </g>
+
+              <g class="pin-target" id="pin-batfet-d" onclick="event.stopPropagation(); inspectPin('batfet_d')">
+                <rect x="540" y="528" width="16" height="9" fill="#10b981" />
+                <rect x="540" y="543" width="16" height="9" fill="#10b981" />
+                <rect x="540" y="558" width="16" height="9" fill="#10b981" />
+                <rect x="540" y="578" width="16" height="10" fill="#10b981" />
+                <text x="524" y="536" fill="#6ee7b7" font-family="monospace" font-size="9" font-weight="bold" text-anchor="end">D•8</text>
+                <text x="524" y="551" fill="#6ee7b7" font-family="monospace" font-size="9" font-weight="bold" text-anchor="end">D•7</text>
+                <text x="524" y="566" fill="#6ee7b7" font-family="monospace" font-size="9" font-weight="bold" text-anchor="end">D•6</text>
+                <text x="524" y="586" fill="#6ee7b7" font-family="monospace" font-size="9" font-weight="bold" text-anchor="end">D•5</text>
+              </g>
+
+              <text x="473" y="560" fill="#34d399" font-family="monospace" font-size="8.5" font-weight="bold" text-anchor="middle">BATFET</text>
+              <text x="473" y="573" fill="#94a3b8" font-family="monospace" font-size="7.5" text-anchor="middle">D ↔ S</text>
+            </g>
+
+            <!-- ========================================================= -->
+            <!-- 8. KBC / EMBEDDED CONTROLLER (EC CON PATAS CLICABLES)     -->
+            <!-- ========================================================= -->
+            <g class="hotspot" id="uh-8" onclick="inspectUsbc('8')">
+              <rect class="selection-ring" x="352" y="646" width="236" height="84" />
+              <rect x="366" y="654" width="208" height="68" rx="5" fill="url(#chipBlack)" stroke="#a855f7" stroke-width="1.5" />
+              <text x="470" y="683" fill="#e9d5ff" font-family="monospace" font-size="10.5" font-weight="bold" text-anchor="middle">KBC / EC</text>
+              <text x="470" y="698" fill="#94a3b8" font-family="monospace" font-size="8" text-anchor="middle">EMBEDDED CONTROLLER (LQFP-128)</text>
+
+              <g class="pin-target" id="pin-kbc-acok" onclick="event.stopPropagation(); inspectPin('kbc_acok')">
+                <rect x="430" y="644" width="10" height="10" fill="#38bdf8" />
+                <text x="435" y="667" fill="#7dd3fc" font-family="monospace" font-size="7.5" text-anchor="middle">ACOK</text>
+              </g>
+              <g class="pin-target" id="pin-kbc-pwr" onclick="event.stopPropagation(); inspectPin('kbc_ec')">
+                <rect x="520" y="644" width="10" height="10" fill="#10b981" />
+                <text x="525" y="667" fill="#6ee7b7" font-family="monospace" font-size="7.5" text-anchor="middle">3.3V_ALW</text>
+              </g>
+
+              <g class="pin-target" id="pin-kbc-i2c" onclick="event.stopPropagation(); inspectPin('i2c_bus')">
+                <rect x="354" y="675" width="12" height="9" fill="#ec4899" />
+                <text x="370" y="683" fill="#f472b6" font-family="monospace" font-size="7.5">I2C_PD</text>
+              </g>
+              <g class="pin-target" id="pin-kbc-smbus" onclick="event.stopPropagation(); inspectPin('smbus_bat')">
+                <rect x="354" y="707" width="12" height="9" fill="#ec4899" />
+                <text x="370" y="715" fill="#f472b6" font-family="monospace" font-size="7.5">SMBUS</text>
+              </g>
+            </g>
+          </svg>
+        </div>
+
+        <!-- PANEL DERECHO: INSPECTOR DE PINES + TESTER + MULTÍMETRO -->
+        <div class="console-panel">
+          <!-- TARJETA DINÁMICA DEL PIN SEÑALADO -->
+          <div class="pin-inspector-card" id="pin-inspector-panel">
+            <div class="pin-inspector-header">
+              <strong style="color:#fff;font-size:0.95rem;" id="pin-comp-name">Puerto USB-C • Pines CC1 / CC2</strong>
+              <span class="pin-tag" id="pin-badge-name">PIN: CC1 / CC2</span>
+            </div>
+            <div class="pin-detail-row">
+              <strong>¿Qué hace este componente?</strong>
+              <span id="pin-comp-role">Es el conector físico reversible de 24 pines por donde entra la energía y viajan las señales de negociación Power Delivery.</span>
+            </div>
+            <div class="pin-detail-row">
+              <strong>Función del Pin / Etapa Señalada:</strong>
+              <span id="pin-signal-desc">Configuration Channel (Canal de Configuración). Detecta en qué posición entró el cable y permite el diálogo digital para pedir 20V al cargador.</span>
+            </div>
+            <div class="pin-connection-box" id="pin-connections-desc">
+              <strong>🔗 ¿Con quién se conecta?</strong><br>
+              Se conecta en paralelo a las <strong>Resistencias Rd 512 (5.1 kΩ)</strong> hacia tierra (GND) y entra directo al <strong>Controlador USB-PD (QFN-32)</strong>.
+            </div>
+          </div>
+
+          <!-- TESTER AMPERÍMETRO USB-C + MULTÍMETRO -->
+          <div class="instrument-card">
+            <div class="instrument-title">
+              <span>🔌 Tester Amperímetro USB-C (Intercalado)</span>
+            </div>
+            <div class="usbc-tester-box">
+              <div class="tester-metric">
+                <span class="label">Voltaje Negociado (VBUS)</span>
+                <span id="usbc-tester-v" class="val">20.0 V</span>
+              </div>
+              <div class="tester-metric">
+                <span class="label">Corriente Consumida</span>
+                <span id="usbc-tester-a" class="val">1.65 A</span>
+              </div>
+              <div id="usbc-tester-msg" class="tester-status-pill">
+                ✅ Negociación PD Exitosa (20V • 33W cargando batería)
+              </div>
+            </div>
+
+            <div class="instrument-title" style="margin-top:10px;">
+              <span>📟 Multímetro en Placa</span>
+              <span id="usbc-probe-label" style="color:#c084fc;font-weight:700;">Punto: 1. Puerto JUSBC1</span>
+            </div>
+            <div class="multimeter-screen">
+              <div id="usbc-mm-val" class="mm-value">20.00 V</div>
+              <div class="mm-sub">
+                <div id="usbc-mm-mode-lbl">ESCALA: DC VOLTS (20V)</div>
+                <div id="usbc-mm-status">Estado: Negociado OK</div>
+              </div>
+            </div>
+            <div class="mm-modes">
+              <button id="usbc-btn-v" class="active" onclick="setMmMode('usbc', 'V')">⚡ Voltaje DC (V)</button>
+              <button id="usbc-btn-c" onclick="setMmMode('usbc', 'C')">🔊 Diodo / GND</button>
+              <button id="usbc-btn-m" onclick="setMmMode('usbc', 'M')">🔬 Medir D-S / G-S (MOSFET)</button>
+            </div>
+          </div>
+
+          <!-- DIAGNÓSTICO Y SOLUCIÓN DE FALLAS EN TALLER -->
+          <div class="instrument-card info-box">
+            <h3 id="usbc-comp-title">Diagnóstico y Medición en Placa</h3>
+            <p id="usbc-comp-desc">
+              Toca cualquier pata de los chips en el diagrama (CC1/CC2, VBUS, Q1/Q2, patas del BQ257xx, patas del BATFET, JBAT o KBC/EC) para ver qué hace cada pin. Usa el botón <strong>🔬 Medir D-S / G-S</strong> para probar los MOSFETs entre sus patas.
+            </p>
+            <div class="measure-tip" id="usbc-comp-measure">
+              <strong>Tip de Taller:</strong> En modo diodo (sin cargador), CC1 y CC2 deben medir ~0.620V. Para probar un MOSFET (Q1, Q2 o BATFET), mide continuidad entre Drain y Source (nunca debe pitar en 0.0 Ω).
+            </div>
+            <div class="fault-alert" id="usbc-fault-banner" style="display:none;"></div>
+
+            <div id="usbc-challenge-box" class="challenge-box">
+              <h4>🕵️ Desafío USB-C: Observa el Amperímetro y mide los puntos</h4>
+              <div class="challenge-controls">
+                <select id="usbc-guess-select">
+                  <option value="">-- Selecciona el diagnóstico correcto --</option>
+                  <option value="5v_low"> Sin negociación (Controlador PD / CC1-CC2 / 512)</option>
+                  <option value="5v_high"> Corto en línea VBUS o Controlador PD quemado (5V alto consumo)</option>
+                  <option value="20v_low"> PD sano (20V), bloqueo en MOSFETs Q1/Q2 o IC Charger</option>
+                  <option value="20v_high"> PD sano (20V), cortocircuito en VSYS / Buck-Boost</option>
+                  <option value="batfet_open"> Falla en BATFET o Shunt de Batería (No carga/no enciende sin cable)</option>
+                  <option value="smbus_dead"> Falla en Bus SMBus (SDA/SCL) o KBC/EC</option>
+                </select>
+                <button class="btn-primary" onclick="checkChallenge('usbc')">Verificar</button>
+              </div>
+              <p id="usbc-chal-feedback" style="margin-top:8px;font-weight:700;font-size:0.85rem;"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      Herramienta Didáctica Interactiva de Soporte Técnico y Electrónica de Notebooks • Diseño Pedagógico para Estudiantes
+    </footer>
+  </div>
+
+  <script>
+    // =========================================================================
+    // AUDIO PITIDO CONTINUIDAD
+    // =========================================================================
+    let audioCtx = null;
+    function playBeep() {
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(2400, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.18);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.18);
+      } catch (e) {}
+    }
+
+    // =========================================================================
+    // BASE DE DATOS DE PINES Y ETAPAS (PANEL DERECHO USB-C COMPLETO)
+    // =========================================================================
+    const pinDatabase = {
+      cc1: {
+        comp: 'Puerto USB-C • Pata CC1',
+        badge: 'PIN: CC1',
+        role: 'Receptáculo USB-C de 24 pines. Permite la conexión reversible y el diálogo digital Power Delivery.',
+        signal: 'Configuration Channel 1. Detecta la orientación del cable y transmite los paquetes de negociación para solicitar 20V al cargador (pulsos de ~1.2V a 1.8V).',
+        conn: 'Se conecta a la primera resistencia <strong>Rd 512 (5.1 kΩ)</strong> a tierra y al pin de entrada <strong>CC1 del Controlador USB-PD</strong>.'
+      },
+      cc2: {
+        comp: 'Puerto USB-C • Pata CC2',
+        badge: 'PIN: CC2',
+        role: 'Receptáculo USB-C de 24 pines. Permite conectar el cable USB-C de ambos lados sin importar cuál esté hacia arriba.',
+        signal: 'Configuration Channel 2. Si giras el cable 180°, la negociación digital ocurre por esta pata en lugar de CC1.',
+        conn: 'Se conecta a la segunda resistencia <strong>Rd 512 (5.1 kΩ)</strong> a tierra y al pin <strong>CC2 del Controlador USB-PD</strong>.'
+      },
+      vbus: {
+        comp: 'Puerto USB-C • Patas VBUS',
+        badge: 'PIN: VBUS (5V → 20V)',
+        role: 'Pines principales de potencia del conector USB-C.',
+        signal: 'Arranca obligatoriamente en <strong>5V</strong> al enchufar el cable. Tras negociar con el Controlador PD, sube a <strong>20V Activo</strong>.',
+        conn: 'Se conecta a la alimentación inicial del <strong>Controlador USB-PD</strong> (para despertarlo con 5V) y al <strong>Drain (pines 5-8) del MOSFET Q1</strong>.'
+      },
+      rd512: {
+        comp: 'Resistencias Pull-Down Rd (512)',
+        badge: '5.1 kΩ (512)',
+        role: 'Dos resistencias de precisión de 5.1 kΩ (código SMD 512) ubicadas junto al puerto USB-C.',
+        signal: 'Actúan como "tarjeta de presentación" (Sink). Provocan una caída de tensión en CC1/CC2 que le indica al cargador que libere los 5V iniciales en VBUS.',
+        conn: 'Están conectadas entre las líneas <strong>CC1 / CC2</strong> y <strong>Tierra (GND)</strong> de la placa madre.'
+      },
+      pd_cc: {
+        comp: 'Controlador USB-PD • Pines CC1/CC2',
+        badge: 'QFN-32 • CC IN/OUT',
+        role: 'Chip negociador inteligente (TPS65994 / TPS65982). Gestiona el protocolo USB Power Delivery.',
+        signal: 'Envía mensajes digitales al cargador pidiendo el perfil de 20V / 3A necesario para que la laptop funcione y cargue.',
+        conn: 'Se conecta directamente a las patas <strong>CC1 y CC2 del Puerto USB-C</strong> y a las resistencias <strong>512</strong>.'
+      },
+      pd_vin: {
+        comp: 'Controlador USB-PD • Alimentación VBUS',
+        badge: 'QFN-32 • VBUS_IN',
+        role: 'Entrada de alimentación auxiliar del controlador PD.',
+        signal: 'Recibe los 5V iniciales de VBUS para encender su regulador interno LDO de 3.3V antes de que existan los 20V.',
+        conn: 'Se conecta a la línea <strong>VBUS</strong> del puerto USB-C.'
+      },
+      pd_gate: {
+        comp: 'Controlador USB-PD • Salida HV GATE',
+        badge: 'SALIDA: 25V GATE',
+        role: 'Bomba de carga interna (Charge Pump) del Controlador USB-PD.',
+        signal: 'Genera <strong>25V</strong> (5V por encima de los 20V de VBUS) para poder saturar y abrir los transistores MOSFET de Canal N.',
+        conn: 'Sale del Controlador PD y viaja directo hasta el <strong>Pin 4 (Gate) de Q1 y Q2</strong>.'
+      },
+      pd_i2c: {
+        comp: 'Controlador USB-PD • Bus I2C / IRQ#',
+        badge: 'BUS DIGITAL I2C',
+        role: 'Interfaz de comunicación digital entre los chips inteligentes de la placa.',
+        signal: 'Informa el estado del cargador (potencia negociada, conexión/desconexión) mediante datos (SDA/SCL) e interrupciones (IRQ#).',
+        conn: 'Conecta en red al <strong>Controlador USB-PD</strong>, al <strong>IC Charger (BQ257xx)</strong> y al <strong>KBC / EC</strong>.'
+      },
+      q1_drain: {
+        comp: 'MOSFET Q1 (SO-8) • Pines 5, 6, 7 y 8 (DRAIN)',
+        badge: 'DRAIN Q1 (20V IN)',
+        role: 'Primer transistor de entrada de Canal N. Actúa como llave principal de paso.',
+        signal: 'Recibe los <strong>20V Activos</strong> provenientes de VBUS. Para probarlo con el tester: entre Drain (5-8) y Source (1-3) debe marcar ~0.520V en diodo en un sentido y OL en el otro (nunca 0.0 Ω).',
+        conn: 'Se conecta directamente a las patas <strong>VBUS del Puerto USB-C</strong>.'
+      },
+      q1_source: {
+        comp: 'MOSFET Q1 (SO-8) • Pines 1, 2 y 3 (SOURCE)',
+        badge: 'SOURCE Q1 (S1)',
+        role: 'Terminal de salida del primer MOSFET Q1.',
+        signal: 'Cuando el Pin 4 recibe 25V, deja pasar los 20V hacia el segundo transistor. Entre Gate (Pin 4) y Source (Pines 1-3) debe haber alta impedancia (OL en modo diodo).',
+        conn: 'Se une espalda con espalda al <strong>Source del MOSFET Q2 (S1 = S2)</strong>.'
+      },
+      q_gate: {
+        comp: 'MOSFETs Q1 y Q2 (SO-8) • Pin 4 (GATE)',
+        badge: 'PIN 4 • GATE 25V',
+        role: 'Compuerta de control de ambos transistores MOSFET de Canal N.',
+        signal: 'Al recibir <strong>25V</strong> desde el Controlador PD (Vgs = +5V sobre los 20V), cierra el canal interno de Q1 y Q2. Si Gate está en corto a Source (0.0 Ω), los 25V se caen y no abre.',
+        conn: 'Recibe la señal naranja <strong>HV GATE (25V)</strong> desde el <strong>Controlador USB-PD</strong>.'
+      },
+      q2_source: {
+        comp: 'MOSFET Q2 (SO-8) • Pines 1, 2 y 3 (SOURCE)',
+        badge: 'SOURCE Q2 (S2)',
+        role: 'Segundo transistor de entrada en serie, montado en sentido opuesto a Q1.',
+        signal: 'Recibe los 20V desde Q1 cuando ambos Gates están activados a 25V.',
+        conn: 'Unido físicamente a los pines 1-3 de <strong>Q1 (S1 = S2)</strong>.'
+      },
+      q2_drain: {
+        comp: 'MOSFET Q2 (SO-8) • Pines 5, 6, 7 y 8 (DRAIN)',
+        badge: 'DRAIN Q2 (20V OUT)',
+        role: 'Salida de potencia protegida hacia la placa madre. Su diodo interno (S ← D) bloquea retornos de batería hacia el puerto USB-C.',
+        signal: 'Entrega los 20V limpios hacia el circuito cargador. Mide caída de diodo entre D y S (~0.520V) para descartar perforación interna.',
+        conn: 'Se conecta directamente a la resistencia de censado <strong>R-SENSE 10mΩ (R010)</strong>.'
+      },
+      r010: {
+        comp: 'Resistencia Shunt • R-SENSE 10mΩ (R010)',
+        badge: 'SENSOR ENTRADA',
+        role: 'Resistencia de altísima precisión de 0.010 Ω (10 miliohmios).',
+        signal: 'Permite medir la caída de tensión proporcional a los amperios totales que consume la laptop para evitar sobrecargas.',
+        conn: 'Se conecta entre el <strong>Drain de Q2</strong> y las patas <strong>ACN / ACP del IC Charger (BQ257xx)</strong>.'
+      },
+      chg_acn: {
+        comp: 'IC Charger BQ257xx • Patas ACN / ACP (Input Sense)',
+        badge: 'PINES: ACN / ACP',
+        role: 'Entradas diferenciales de sensado de corriente y voltaje del adaptador en el chip cargador.',
+        signal: 'Miden la diferencia de milivoltios a través de la resistencia R010 para calcular la corriente de entrada (IIN) y proteger el cargador USB-C.',
+        conn: 'Se conectan en paralelo a ambos extremos de la resistencia <strong>R-SENSE 10mΩ (R010)</strong>.'
+      },
+      chg_sw: {
+        comp: 'IC Charger BQ257xx • Patas SW1 / SW2 (Switch Nodes)',
+        badge: 'PINES: SW1 / SW2',
+        role: 'Salidas de conmutación PWM de alta frecuencia que gobiernan los 4 MOSFETs del puente Buck-Boost.',
+        signal: 'Generan trenes de pulsos cuadrados (800 kHz - 1.2 MHz) que cargan y descargan la bobina L1 (2.2µH) para regular el voltaje de VSYS.',
+        conn: 'Conectan el <strong>IC Charger</strong> con los Gates/Nodos de conmutación del <strong>Puente-H + Bobina L1</strong>.'
+      },
+      chg_srp: {
+        comp: 'IC Charger BQ257xx • Patas SDA / SCL (Bus SMBus)',
+        badge: 'PINES: SDA / SCL',
+        role: 'Interfaz de comunicación digital del IC Charger hacia el KBC y la batería.',
+        signal: 'Recibe los comandos del KBC/EC que le indican a qué voltaje (ej. 12.6V) y con cuántos amperios debe cargar la batería.',
+        conn: 'Se conectan al <strong>Bus SMBus (SDA/SCL)</strong> compartido con el <strong>KBC/EC</strong> y el <strong>Conector JBAT</strong>.'
+      },
+      chg_ok: {
+        comp: 'IC Charger BQ257xx • Pata CHRG_OK (ACOK)',
+        badge: 'PIN: CHRG_OK (3.3V)',
+        role: 'Señal lógica de "Cargador Presente y Válido" generada por el IC Charger.',
+        signal: 'Cuando los 20V de entrada son estables y están dentro de rango, esta pata sube a <strong>3.3V</strong> para avisar al KBC que puede encender el equipo.',
+        conn: 'Va directo desde el <strong>IC Charger</strong> hasta la pata <strong>ACOK del KBC / EC</strong>.'
+      },
+      chg_bgate: {
+        comp: 'IC Charger BQ257xx • Pata BGATE (Battery Gate)',
+        badge: 'PIN: BGATE (Control BATFET)',
+        role: 'Salida de control dedicada exclusivamente a encender o apagar el MOSFET BATFET.',
+        signal: 'Regula la conducción del BATFET durante la carga de la batería y lo satura por completo al instante cuando desconectas el cable USB-C.',
+        conn: 'Sale de la pata <strong>BGATE del BQ257xx</strong> y va directo al <strong>Pin 4 (Gate) del BATFET</strong>.'
+      },
+      buck_l1: {
+        comp: 'Etapa Buck-Boost (4 MOSFETs) + Bobina L1 (2.2µH)',
+        badge: 'CONVERSOR DC-DC',
+        role: 'Etapa de potencia controlada por el BQ257xx. Convierte los 20V de entrada al voltaje exacto del sistema y batería (ej. 12.6V para 3 celdas).',
+        signal: 'Conmuta a alta frecuencia para reducir (Buck) o elevar (Boost) el voltaje según la carga de la batería.',
+        conn: 'Recibe energía desde las patas <strong>SW1/SW2 del IC Charger</strong> y entrega la tensión regulada al <strong>Nodo VSYS</strong>.'
+      },
+      vsys_node: {
+        comp: 'Riel Principal del Sistema (Nodo VSYS)',
+        badge: 'NODO VSYS (~12.6V)',
+        role: 'Punto de distribución maestro donde nace la alimentación para todas las sub-fuentes de la placa madre (3.3V, 5V, RAM, CPU).',
+        signal: 'Mantiene un voltaje estable (~11.4V a 12.6V) tanto si el equipo funciona con cargador USB-C como si funciona solo con batería.',
+        conn: 'Alimenta las <strong>Fuentes Always del Sistema</strong> y entra a los pines <strong>Drain (5-8) del BATFET</strong>.'
+      },
+      batfet_d: {
+        comp: 'BATFET (SO-8) • Pines 5, 6, 7 y 8 (DRAIN)',
+        badge: 'DRAIN BATFET (VSYS)',
+        role: 'Terminal de entrada/salida del BATFET conectado al bus principal del sistema.',
+        signal: 'En modo carga recibe ~12.6V desde VSYS. En modo batería entrega la tensión de la batería hacia VSYS. Medición tester: entre D y S debe dar ~0.510V en diodo en un sentido y OL en el inverso.',
+        conn: 'Se conecta al <strong>Nodo VSYS</strong> y a la salida de la <strong>Bobina L1</strong>.'
+      },
+      batfet_s: {
+        comp: 'BATFET (SO-8) • Pines 1, 2 y 3 (SOURCE)',
+        badge: 'SOURCE BATFET (VBAT)',
+        role: 'Terminal del BATFET orientado hacia el lado de la batería.',
+        signal: 'Cuando BGATE activa el transistor, deja pasar corriente hacia la batería para cargarla. Si está abierto (OL en ambos sentidos en diodo), la batería jamás cargará.',
+        conn: 'Se conecta a la <strong>Resistencia Shunt de Batería (R010)</strong> y hacia el conector <strong>JBAT</strong>.'
+      },
+      r010_bat: {
+        comp: 'Resistencia Shunt de Batería (R010 BAT)',
+        badge: 'SENSOR CARGA/DESCARGA',
+        role: 'Segunda resistencia sensora de 10 mΩ dedicada exclusivamente al circuito de la batería.',
+        signal: 'Informa al BQ257xx (pines SRP/SRN) cuántos amperios están entrando a las celdas (carga) o saliendo de ellas (descarga).',
+        conn: 'Está en serie entre los pines <strong>Source (1-3) del BATFET</strong> y el pin positivo <strong>VBAT+ del Conector JBAT</strong>.'
+      },
+      jbat: {
+        comp: 'Conector de Batería (JBAT • Ubicado a la Izquierda)',
+        badge: 'VBAT+ / SDA / SCL',
+        role: 'Puerto físico donde encastra la batería inteligente de Litio.',
+        signal: 'Transporta la potencia de carga/descarga (<strong>VBAT+</strong>) y las señales digitales de telemetría (<strong>SDA</strong> y <strong>SCL</strong> con pull-up a 3.3V).',
+        conn: 'El pin <strong>VBAT+</strong> va al <strong>Shunt R010</strong> y los pines <strong>SDA/SCL</strong> van al <strong>KBC/EC</strong> y al <strong>BQ257xx</strong>.'
+      },
+      smbus_bat: {
+        comp: 'KBC / EC • Patas SMBUS (SDA / SCL)',
+        badge: 'PINES KBC: SMBUS',
+        role: 'Pines maestros de comunicación del Embedded Controller con la batería inteligente.',
+        signal: 'Interrogan cada segundo a la batería para leer su porcentaje, temperatura y corriente solicitada. Si SDA o SCL caen a 0V, la carga se bloquea.',
+        conn: 'Conectan el <strong>KBC/EC</strong> con los pines <strong>SDA/SCL del Conector JBAT</strong> y el <strong>IC Charger</strong>.'
+      },
+      i2c_bus: {
+        comp: 'Bus Digital I2C (PD ↔ Charger ↔ KBC)',
+        badge: 'PINES: I2C / IRQ#',
+        role: 'Autopista de datos entre el Controlador USB-PD, el IC Charger y el KBC.',
+        signal: 'Coordina la potencia negociada por USB-C (ej. 65W) para que el Charger ajuste su límite de corriente.',
+        conn: 'Interconecta al <strong>Controlador USB-PD</strong>, al <strong>IC Charger BQ257xx</strong> y al <strong>KBC / EC</strong>.'
+      },
+      kbc_acok: {
+        comp: 'KBC / EC • Pata ACOK (Entrada Cargador OK)',
+        badge: 'PIN KBC: ACOK (3.3V)',
+        role: 'Pin de entrada digital en el KBC que confirma que hay un cargador válido conectado.',
+        signal: 'Al recibir <strong>3.3V</strong> desde la pata <strong>CHRG_OK</strong> del BQ257xx, el KBC habilita el encendido del equipo y el icono de batería cargando.',
+        conn: 'Recibe la señal desde la pata <strong>CHRG_OK del IC Charger BQ257xx</strong>.'
+      },
+      kbc_ec: {
+        comp: 'KBC / EC • Pata 3.3V_ALW (Alimentación Always)',
+        badge: 'PIN KBC: VCC 3.3V',
+        role: 'Alimentación principal permanente del Embedded Controller.',
+        signal: 'Debe estar presente en <strong>3.3V</strong> siempre que haya batería o cargador conectado para que el KBC pueda despertar el sistema.',
+        conn: 'Proviene del regulador lineal/fuente Always alimentada desde <strong>VSYS</strong>.'
+      }
+    };
+
+    function inspectPin(pinKey) {
+      const data = pinDatabase[pinKey];
+      if (!data) return;
+
+      document.querySelectorAll('.pin-target').forEach(el => el.classList.remove('pin-active'));
+      const activeMap = {
+        cc1: ['pin-cc1'],
+        cc2: ['pin-cc2'],
+        vbus: ['pin-vbus'],
+        rd512: ['pin-rd512'],
+        pd_cc: ['pin-pd-cc'],
+        pd_vin: ['pin-pd-vin'],
+        pd_gate: ['pin-pd-gate', 'pin-gate25-lbl'],
+        pd_i2c: ['pin-pd-i2c', 'pin-kbc-i2c'],
+        q1_drain: ['pin-q1-d'],
+        q1_source: ['pin-q1-s'],
+        q_gate: ['pin-q1-g', 'pin-q2-g', 'pin-gate25-lbl'],
+        q2_source: ['pin-q2-s'],
+        q2_drain: ['pin-q2-d'],
+        r010: ['pin-r010'],
+        chg_acn: ['pin-chg-acn'],
+        chg_sw: ['pin-chg-sw'],
+        chg_srp: ['pin-chg-srp'],
+        chg_ok: ['pin-chg-ok', 'pin-kbc-acok'],
+        chg_bgate: ['pin-chg-bgate', 'pin-batfet-g'],
+        buck_l1: ['pin-buck-l1'],
+        vsys_node: ['pin-vsys-node'],
+        batfet_d: ['pin-batfet-d'],
+        batfet_s: ['pin-batfet-s'],
+        r010_bat: ['pin-r010-bat'],
+        jbat: ['pin-jbat'],
+        smbus_bat: ['pin-jbat', 'pin-kbc-smbus', 'pin-chg-srp'],
+        i2c_bus: ['pin-pd-i2c', 'pin-chg-i2c', 'pin-kbc-i2c'],
+        kbc_acok: ['pin-kbc-acok', 'pin-chg-ok'],
+        kbc_ec: ['pin-kbc-pwr']
+      };
+
+      (activeMap[pinKey] || []).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('pin-active');
+      });
+
+      document.getElementById('pin-comp-name').textContent = data.comp;
+      document.getElementById('pin-badge-name').textContent = data.badge;
+      document.getElementById('pin-comp-role').innerHTML = data.role;
+      document.getElementById('pin-signal-desc').innerHTML = data.signal;
+      document.getElementById('pin-connections-desc').innerHTML = '<strong>🔗 ¿Con quién se conecta?</strong><br>' + data.conn;
+    }
+
+    // =========================================================================
+    // REPRODUCTOR INTERACTIVO DE NEGOCIACIÓN USB-C (7 PASOS HASTA BATERÍA)
+    // =========================================================================
+    const negotiationSteps = [
+      {
+        caption: '<strong>1. Detección Física:</strong> Al conectar el cable USB-C, las resistencias <strong>512 (5.1 kΩ)</strong> en <strong>CC1 y CC2</strong> le avisan al cargador que hay una laptop conectada.',
+        badge: 'ESTADO 1: Rd 5.1kΩ DETECTADO',
+        wires: ['uw-cc-rd'],
+        pin: 'rd512',
+        v: '0.0 V → 5V',
+        a: '0.00 A'
+      },
+      {
+        caption: '<strong>2. Alimentación Inicial 5V:</strong> El cargador habilita <strong>5V en VBUS</strong>. Esos 5V entran al <strong>Controlador USB-PD (QFN-32)</strong> y encienden su lógica interna.',
+        badge: 'ESTADO 2: VBUS 5V → PD ACTIVO',
+        wires: ['uw-cc-rd', 'uw-vbus-pd'],
+        pin: 'pd_vin',
+        v: '5.0 V',
+        a: '0.02 A'
+      },
+      {
+        caption: '<strong>3. Negociación Digital:</strong> El Controlador USB-PD dialoga por <strong>CC1 / CC2</strong> con el cargador y le pide el perfil de <strong>20V / 3A</strong>.',
+        badge: 'ESTADO 3: DIÁLOGO CC1/CC2 PD',
+        wires: ['uw-cc-rd', 'uw-vbus-pd', 'uw-cc-pd'],
+        pin: 'pd_cc',
+        v: '5.0 V (Negociando)',
+        a: '0.03 A'
+      },
+      {
+        caption: '<strong>4. Subida a 20V en VBUS:</strong> El cargador acepta y sube <strong>VBUS a 20V Activo</strong>. La tensión llega hasta el Drain de <strong>MOSFET Q1</strong>, pero aún no cruza.',
+        badge: 'ESTADO 4: 20V ACTIVO EN VBUS',
+        wires: ['uw-cc-rd', 'uw-vbus-pd', 'uw-cc-pd', 'uw-vbus-q1'],
+        pin: 'q1_drain',
+        v: '20.0 V',
+        a: '0.03 A'
+      },
+      {
+        caption: '<strong>5. Apertura de Compuertas (Gate 25V):</strong> El Controlador PD envía <strong>25V al Pin 4 (G)</strong> de <strong>Q1 y Q2</strong>. Los MOSFETs abren y los 20V cruzan por <strong>S1=S2</strong>.',
+        badge: 'ESTADO 5: GATE 25V EN PIN 4 (Q1 & Q2)',
+        wires: ['uw-cc-rd', 'uw-vbus-pd', 'uw-cc-pd', 'uw-vbus-q1', 'uw-gate-25v', 'uw-q1-q2'],
+        pin: 'q_gate',
+        v: '20.0 V',
+        a: '0.15 A'
+      },
+      {
+        caption: '<strong>6. Regulación Buck-Boost (VSYS):</strong> Los 20V entran por <strong>ACN/ACP</strong> al <strong>BQ257xx</strong>. Por <strong>SW1/SW2</strong> y la <strong>Bobina L1 (2.2µH)</strong> genera <strong>VSYS (~12.6V)</strong> y activa <strong>CHRG_OK</strong> hacia el KBC.',
+        badge: 'ESTADO 6: VSYS + CHRG_OK ACTIVO',
+        wires: ['uw-cc-rd', 'uw-vbus-pd', 'uw-cc-pd', 'uw-vbus-q1', 'uw-gate-25v', 'uw-q1-q2', 'uw-q2-chg', 'uw-buck-vsys', 'uw-i2c', 'uw-chg-kbc'],
+        pin: 'chg_ok',
+        v: '20.0 V',
+        a: '0.55 A'
+      },
+      {
+        caption: '<strong>7. Carga de Batería y SMBus:</strong> El KBC lee la batería por <strong>SMBUS (SDA/SCL)</strong> y el BQ257xx envía <strong>BGATE</strong> al Pin 4 del <strong>BATFET</strong>. La corriente cruza el <strong>Shunt R010</strong> hasta <strong>JBAT</strong>.',
+        badge: 'ESTADO 7: BGATE + CARGANDO JBAT',
+        wires: ['uw-cc-rd', 'uw-vbus-pd', 'uw-cc-pd', 'uw-vbus-q1', 'uw-gate-25v', 'uw-q1-q2', 'uw-q2-chg', 'uw-buck-vsys', 'uw-vsys-bat', 'uw-bgate', 'uw-i2c', 'uw-smbus', 'uw-chg-kbc'],
+        pin: 'chg_bgate',
+        v: '20.0 V',
+        a: '1.65 A'
+      }
+    ];
+
+    let currentNegStep = 0;
+    let negTimer = null;
+
+    function setNegStep(idx) {
+      if (document.getElementById('usbc-challenge-box').classList.contains('visible')) return;
+      currentNegStep = idx;
+      const step = negotiationSteps[idx];
+
+      document.getElementById('usbc-fault-select').value = 'none';
+      document.getElementById('usbc-power-mode').value = 'charging';
+      document.getElementById('usbc-fault-banner').style.display = 'none';
+
+      for (let i = 0; i < 7; i++) {
+        document.getElementById('nstep-' + i).classList.toggle('active', i === idx);
+      }
+
+      document.getElementById('neg-progress-bar').style.width = (((idx + 1) / 7) * 100) + '%';
+      document.getElementById('neg-caption-text').innerHTML = step.caption;
+      document.getElementById('neg-caption-badge').textContent = step.badge;
+
+      const allWires = ['uw-cc-rd', 'uw-vbus-pd', 'uw-cc-pd', 'uw-vbus-q1', 'uw-gate-25v', 'uw-q1-q2', 'uw-q2-chg', 'uw-buck-vsys', 'uw-vsys-bat', 'uw-bgate', 'uw-i2c', 'uw-smbus', 'uw-chg-kbc'];
+      allWires.forEach(w => {
+        const el = document.getElementById(w);
+        if (el) el.classList.toggle('off', !step.wires.includes(w));
+      });
+
+      document.getElementById('usbc-tester-v').textContent = step.v;
+      document.getElementById('usbc-tester-a').textContent = step.a;
+      document.getElementById('usbc-tester-msg').textContent = '▶ ' + step.badge;
+
+      inspectPin(step.pin);
+    }
+
+    function nextNegStep() {
+      setNegStep((currentNegStep + 1) % 7);
+    }
+
+    function prevNegStep() {
+      setNegStep((currentNegStep + 6) % 7);
+    }
+
+    function togglePlayNeg() {
+      const btn = document.getElementById('btn-play-neg');
+      if (negTimer) {
+        clearInterval(negTimer);
+        negTimer = null;
+        btn.textContent = '▶ Reproducir Secuencia';
+        btn.classList.remove('playing');
+      } else {
+        btn.textContent = '⏸ Pausar Secuencia';
+        btn.classList.add('playing');
+        negTimer = setInterval(() => {
+          if (currentNegStep < 6) {
+            setNegStep(currentNegStep + 1);
+          } else {
+            togglePlayNeg();
+          }
+        }, 2300);
+      }
+    }
+
+    // =========================================================================
+    // LÓGICA MÓDULO 1 (TRADICIONAL LA-9902P) - TODAS LAS FALLAS REVISADAS
+    // =========================================================================
+    const tradComponents = {
+      '1': { title: '1. Jack de Carga (DC-IN)', desc: 'Entrada física cilíndrica del cargador. Entrega una tensión fija de ~19.5V desde el momento en que se enchufa a la red eléctrica.', measure: 'Punta negra a tierra (GND) y roja al pin central positivo del Jack. Debe medir ~19.5V estables.' },
+      '2': { title: '2. Conector PJ101 en Placa Madre', desc: 'Ficha plástica blanca de 4 pines donde se conecta el cable del Jack de carga hacia la tarjeta madre.', measure: 'Mide voltaje DC en los pines rojos del conector. Si hay 19.5V en el Jack pero 0V aquí, el cable interno está cortado.' },
+      '3': { title: '3. Fusible Principal SMD (PF101)', desc: 'Fusible cerámico blanco de protección contra sobrecorrientes iniciales. Si hay un corto grave adelante, se abre para salvar la placa.', measure: 'En Voltaje DC debe tener 19.5V en ambos extremos metálicos. Sin cargador, en Continuidad debe marcar ~0.1 Ω y pitar. Antes de reemplazarlo si está abierto, mide continuidad a tierra en su salida.' },
+      '4': { title: '4. Bobina de Entrada (PL101)', desc: 'Filtro EMI (interferencia electromagnética) con núcleo de ferrita que limpia el ruido eléctrico proveniente del cargador.', measure: 'Debe medir 19.5V en ambos lados y continuidad (~0.2 Ω) entre entrada y salida.' },
+      '5': { title: '5. Primer MOSFET de Entrada (PQ302 - ACFET)', desc: 'Transistor de canal N en encapsulado SO-8 (8 pines). Solo deja pasar los 19.5V de Source a Drain cuando su pin 4 (Gate) recibe ~24.8V.', measure: 'Mide pines 1-3 (Source = 19.5V), pines 5-8 (Drain = 19.5V) y pin 4 (Gate = ~24.8V, 5V por encima del cargador). En modo continuidad (sin energía), no debe pitar en 0.0 Ω.' },
+      '6': { title: '6. Segundo MOSFET de Entrada (PQ301 - RBFET)', desc: 'Encapsulado SO-8 en serie con PQ302 pero invertido: evita que la corriente de la batería retorne hacia el Jack cuando desconectas el cargador.', measure: 'Comprueba que ambos lados tengan 19.5V con cargador. En modo continuidad/diodo (sin energía) no debe haber corto entre Drain y Source.' },
+      '7': { title: '7. Resistencia Shunt de Entrada (PR301 - R010)', desc: 'Resistencia de precisión de 0.010 Ω (serigrafía R010) que permite al IC de carga medir el consumo total de toda la notebook.', measure: 'En ambos extremos debe existir el mismo voltaje (19.5V con cargador o ~11.8V solo con batería).' },
+      '8': { title: '8. IC de Carga QFN-20 (PU301 - BQ24725A)', desc: 'Controlador principal del sector de carga. Supervisa el adaptador, genera los 24.8V (Charge Pump) para abrir los MOSFETs y gestiona la carga.', measure: 'Verifica su alimentación VCC (19.5V), señal ACDET (~2.6V) y salida ACDRV hacia el Gate de PQ302/PQ301 (~24.8V).' },
+      '9': { title: '9. Bobina de Potencia de Carga (PL302 - 4R7)', desc: 'Bobina moldeada de ferrita (4.7 µH). Reduce y estabiliza los 19.5V al voltaje exacto de carga de la batería (~12.6V).', measure: 'Con batería conectada y cargando, mide ~12.2V - 12.6V en sus terminales laterales.' },
+      '10': { title: '10. Resistencia Shunt de Batería (PR324 - R010)', desc: 'Sensor de corriente dedicado exclusivamente a medir cuántos amperios entran o salen de la batería.', measure: 'Debe presentar ~12.2V - 12.6V en ambos extremos cuando la batería está conectada.' },
+      '11': { title: '11. Fusible de Protección de Batería (PF201)', desc: 'Fusible SMD que protege la línea positiva de la batería contra cortocircuitos o sobrecargas.', measure: 'Con batería conectada debe medir ~12.2V en ambos lados. Sin batería, debe dar continuidad (~0.1 Ω y pitido).' },
+      '12': { title: '12. Conector de Batería Principal (JBAT2)', desc: 'Puerto multicontacto con láminas doradas donde encastra la batería. Incluye pines positivos de potencia, GND y datos SMBus.', measure: 'Mide el voltaje de la batería en los pines positivos (~11.4V a 12.6V) y 3.3V en los pines de comunicación.' }
+    };
+
+    const tradFaultDescriptions = {
+      none: '',
+      pf101_open: '⚠️ FALLA ACTIVA: El fusible PF101 está abierto (OL en continuidad). Los 19.5V llegan hasta la entrada de PF101, pero después de él hay 0.00V. El equipo está completamente muerto.',
+      no_charge_pump: '⚠️ FALLA ACTIVA: Sin Bomba de Carga (24.8V). Los 19.5V cruzan PF101 y PL101 hasta PQ302, pero el Pin 4 (Gate) de PQ302/PQ301 mide 0.00V en lugar de 24.8V, bloqueando el paso hacia B+.',
+      pq302_short: '⚠️ FALLA ACTIVA: El MOSFET PQ302 está en cortocircuito (0.0 Ω en continuidad). Al conectar el cargador, la tensión cae a ~0.45V porque el cargador entra en protección.',
+      pu301_dead: '⚠️ FALLA ACTIVA: El IC Charger PU301 (BQ24725A) está dañado (0.00V en salida/Gate y sin conmutación en PL302). Los 19.5V llegan hasta PQ302 y PU301, pero el chip no responde ni activa el circuito.',
+      pf201_open: '⚠️ FALLA ACTIVA: El fusible de batería PF201 está abierto (OL en continuidad). La notebook enciende normal con cargador (B+ 19.5V OK), pero no carga la batería y se apaga al desenchufar.'
+    };
+
+    let tradState = { selected: '1', mmMode: 'V' };
+
+    function getTradReadings(compId) {
+      const mode = document.getElementById('trad-power-mode').value;
+      const fault = document.getElementById('trad-fault-select').value;
+      const hasAc = mode !== 'bat_only';
+      const hasBat = mode !== 'ac_only';
+
+      let v = 0, cont = 'OL (Abierto)', beep = false, status = 'Normal';
+      if (['3', '4', '7', '9', '10', '11'].includes(compId)) { cont = '0.1 Ω (Pita)'; beep = true; }
+      else if (compId === '5' || compId === '6') { cont = '0.540 V (Diodo OK)'; }
+      else { cont = '0.480 V (Caída OK)'; }
+
+      if (fault === 'pf101_open' && compId === '3') { cont = 'OL (Fusible Abierto)'; beep = false; }
+      if (fault === 'pf201_open' && compId === '11') { cont = 'OL (Fusible Abierto)'; beep = false; }
+      if (fault === 'pq302_short' && ['3', '4', '5'].includes(compId)) { cont = '0.0 Ω (¡CORTO!)'; beep = true; }
+      if (fault === 'pu301_dead' && compId === '8') { cont = '0.02 Ω (¡IC Dañado!)'; beep = true; }
+
+      if (!hasAc && hasBat) {
+        if (fault === 'pf201_open' && compId !== '12') { v = 0; status = 'Cortado en PF201'; }
+        else if (['12', '11', '10', '9', '8', '7', '6'].includes(compId)) { v = 11.8; status = 'Alimentado por Batería'; }
+        else { v = 0; status = 'Bloqueado por PQ301 (OK)'; }
+      } else {
+        if (fault === 'pq302_short') {
+          v = ['1', '2', '3', '4', '5'].includes(compId) ? 0.45 : 0.0;
+          status = '¡Cargador Protegido por Corto!';
+        } else if (fault === 'pf101_open') {
+          v = ['1', '2'].includes(compId) ? 19.5 : 0.0;
+          status = v > 0 ? 'Antes del Fusible' : '¡Sin Tensión (PF101 Abierto)!';
+        } else if (fault === 'no_charge_pump') {
+          if (['1', '2', '3', '4', '8'].includes(compId)) { v = 19.5; status = 'Entrada 19.5V OK'; }
+          else if (compId === '5' || compId === '6') { v = 0.0; status = '¡Gate = 0V (Falta 24.8V)!'; }
+          else if (['11', '12'].includes(compId) && hasBat) { v = 11.4; status = 'Batería sin cargar'; }
+          else { v = 0.0; status = 'Bloqueado en PQ302/PQ301'; }
+        } else if (fault === 'pu301_dead') {
+          if (['1', '2', '3', '4', '5'].includes(compId)) { v = 19.5; status = compId === '5' ? 'Entrada 19.5V (Gate 0V)' : 'Entrada OK'; }
+          else if (compId === '8') { v = 0.0; status = '¡IC PU301 No Responde!'; }
+          else if (['11', '12'].includes(compId) && hasBat) { v = 11.4; status = 'Batería sin cargar'; }
+          else { v = 0.0; status = 'Sin paso de energía'; }
+        } else if (fault === 'pf201_open') {
+          if (['1', '2', '3', '4', '5', '6', '7', '8'].includes(compId)) { v = compId === '5' ? 24.8 : 19.5; status = 'Sistema Principal OK'; }
+          else if (compId === '12' && hasBat) { v = 11.2; status = 'Batería aislada'; }
+          else { v = 0.0; status = '¡Cortado en PF201!'; }
+        } else {
+          if (['1', '2', '3', '4', '6', '7', '8'].includes(compId)) { v = 19.5; status = 'Tensión Nominal'; }
+          else if (compId === '5') { v = 24.8; status = 'Gate Charge Pump OK'; }
+          else if (['9', '10', '11', '12'].includes(compId)) { v = hasBat ? 12.45 : 3.2; status = hasBat ? 'Cargando Batería' : 'Sin Batería'; }
+        }
+      }
+      return { v: v.toFixed(2) + ' V', rawV: v, cont, beep, status };
+    }
+
+    function updateTradSim() {
+      const mode = document.getElementById('trad-power-mode').value;
+      const fault = document.getElementById('trad-fault-select').value;
+      const isChal = document.getElementById('trad-challenge-box').classList.contains('visible');
+      const hasAc = mode !== 'bat_only';
+      const hasBat = mode !== 'ac_only';
+
+      for (let i = 1; i <= 12; i++) document.getElementById('th-' + i).classList.remove('faulted');
+      const wires = ['tw-1-3', 'tw-3-5', 'tw-5-6', 'tw-6-sys', 'tw-gate', 'tw-sys-ic', 'tw-ic-bat', 'tw-bat-conn'];
+      wires.forEach(w => { const el = document.getElementById(w); el.classList.add('off'); el.classList.remove('reverse'); });
+
+      const banner = document.getElementById('trad-fault-banner');
+      banner.style.display = (fault === 'none' || isChal) ? 'none' : 'block';
+      banner.textContent = tradFaultDescriptions[fault];
+
+      if (!hasAc && hasBat) {
+        if (fault !== 'pf201_open') {
+          ['tw-bat-conn', 'tw-ic-bat', 'tw-sys-ic', 'tw-6-sys'].forEach(id => {
+            const el = document.getElementById(id); el.classList.remove('off'); el.classList.add('reverse');
+          });
+        } else if (!isChal) { document.getElementById('th-11').classList.add('faulted'); }
+      } else if (hasAc) {
+        if (fault === 'pq302_short') {
+          if (!isChal) document.getElementById('th-5').classList.add('faulted');
+        } else if (fault === 'pf101_open') {
+          document.getElementById('tw-1-3').classList.remove('off');
+          if (!isChal) document.getElementById('th-3').classList.add('faulted');
+        } else if (fault === 'no_charge_pump' || fault === 'pu301_dead') {
+          document.getElementById('tw-1-3').classList.remove('off'); document.getElementById('tw-3-5').classList.remove('off');
+          if (!isChal) document.getElementById(fault === 'pu301_dead' ? 'th-8' : 'th-5').classList.add('faulted');
+        } else if (fault === 'pf201_open') {
+          ['tw-1-3', 'tw-3-5', 'tw-5-6', 'tw-6-sys', 'tw-gate', 'tw-sys-ic', 'tw-ic-bat'].forEach(id => document.getElementById(id).classList.remove('off'));
+          if (!isChal) document.getElementById('th-11').classList.add('faulted');
+        } else {
+          ['tw-1-3', 'tw-3-5', 'tw-5-6', 'tw-6-sys', 'tw-gate'].forEach(id => document.getElementById(id).classList.remove('off'));
+          if (hasBat) ['tw-sys-ic', 'tw-ic-bat', 'tw-bat-conn'].forEach(id => document.getElementById(id).classList.remove('off'));
+        }
+      }
+      inspectTrad(tradState.selected, false);
+    }
+
+    function inspectTrad(compId, triggerSound = true) {
+      tradState.selected = compId;
+      for (let i = 1; i <= 12; i++) document.getElementById('th-' + i).classList.toggle('selected', String(i) === compId);
+      const info = tradComponents[compId];
+      const reading = getTradReadings(compId);
+      document.getElementById('trad-probe-label').textContent = 'Punto: ' + info.title;
+      document.getElementById('trad-comp-title').textContent = info.title;
+      document.getElementById('trad-comp-desc').textContent = info.desc;
+      document.getElementById('trad-comp-measure').innerHTML = '<strong>Cómo medirlo:</strong> ' + info.measure;
+
+      const valEl = document.getElementById('trad-mm-val');
+      if (tradState.mmMode === 'V') {
+        valEl.textContent = reading.v;
+        document.getElementById('trad-mm-mode-lbl').textContent = 'ESCALA: DC VOLTS (20V)';
+        valEl.classList.toggle('danger', reading.rawV < 1.0 && reading.rawV > 0);
+      } else {
+        valEl.textContent = reading.cont;
+        document.getElementById('trad-mm-mode-lbl').textContent = 'ESCALA: CONTINUIDAD / DIODO';
+        valEl.classList.toggle('danger', reading.cont.includes('CORTO') || reading.cont.includes('Abierto') || reading.cont.includes('Dañado'));
+        if (triggerSound && reading.beep) playBeep();
+      }
+      document.getElementById('trad-mm-status').textContent = 'Estado: ' + reading.status;
+    }
+
+    // =========================================================================
+    // LÓGICA MÓDULO 2 (USB-C PD COMPLETO + MEDICIÓN ENTRE PATAS DE MOSFETS)
+    // =========================================================================
+    const usbcComponents = {
+      '1': { title: '1. Puerto USB-C (24 Pines)', desc: 'Conector reversible con patas CC1, CC2 y VBUS. Primer punto de contacto físico del cargador.', measure: 'Mide caída de tensión (~0.620V) en CC1 y CC2 en modo diodo (sin cargador).', pin: 'cc1' },
+      '2': { title: '2. Resistencias Rd 512 (5.1 kΩ)', desc: 'Resistencias pull-down conectadas a tierra en CC1 y CC2 que solicitan los 5V iniciales al cargador.', measure: 'Sin energía, mide 5.1 kΩ entre CC1/CC2 y GND.', pin: 'rd512' },
+      '3': { title: '3. Controlador USB-PD (QFN-32)', desc: 'Negocia digitalmente los 20V con el cargador y activa su bomba de carga HV GATE de 25V.', measure: 'Verifica alimentación LDO 3.3V, pulsos en CC1/CC2 y salida de 25V hacia Pin 4 de Q1 y Q2.', pin: 'pd_gate' },
+      '5': { title: '4. MOSFETs Q1 y Q2 (SO-8)', desc: 'Transistores Canal N espalda con espalda (S1=S2) que abren el paso de los 20V cuando reciben 25V en el Pin 4 (Gate).', measure: 'Con el tester en Diodo: entre Drain (5-8) y Source (1-3) debe marcar ~0.520V en un sentido y OL en el otro. Entre Gate (4) y Source (1-3) debe dar OL (si pita en 0.0 Ω está en corto).', pin: 'q_gate' },
+      '6': { title: '5. IC Charger Buck-Boost (BQ257xx)', desc: 'Controla el puente Buck-Boost (SW1/SW2), sensa corriente (ACN/ACP), activa ACOK (CHRG_OK) al KBC y gobierna el BATFET por BGATE.', measure: 'Mide 20V en ACN/ACP, 3.3V en CHRG_OK, señal BGATE hacia el BATFET y bus SDA/SCL.', pin: 'chg_bgate' },
+      '7': { title: '6. Resistencia Shunt R-SENSE (R010)', desc: 'Resistencia de 10 mΩ que mide la corriente total que entra al IC Charger.', measure: 'Continuidad ~0.0 Ω entre sus dos extremos y 20V en ambos lados.', pin: 'r010' },
+      '8': { title: '7. KBC / Embedded Controller (EC)', desc: 'Recibe CHRG_OK (ACOK), dialoga con el PD por I2C y lee la batería por SMBUS (SDA/SCL).', measure: 'Mide 3.3V_ALW, 3.3V en ACOK y actividad en las patas I2C_PD y SMBUS.', pin: 'kbc_acok' },
+      '9': { title: '8. Etapa Buck-Boost + Bobina L1 (2.2µH)', desc: 'Puente H de 4 MOSFETs + inductor principal que transforma los 20V del USB-C en el voltaje regulado VSYS (~12.6V) para el sistema y la batería.', measure: 'Mide ~12.6V estables en el nodo VSYS (salida de la bobina L1) y verifica ausencia de corto a tierra en modo diodo.', pin: 'buck_l1' },
+      '10': { title: '9. MOSFET BATFET (SO-8 • VSYS ↔ VBAT)', desc: 'Llave electrónica entre VSYS (Drain 5-8) y la batería (Source 1-3), controlada por la pata BGATE en su Pin 4.', measure: 'Mide entre Drain (5-8) y Source (1-3) en modo diodo (~0.510V en un sentido, OL en el otro). Si marca 0.0 Ω está en corto; si da OL en ambos sentidos está abierto.', pin: 'batfet_s' },
+      '11': { title: '10. Shunt de Batería R010 (Sensor Carga)', desc: 'Resistencia sensora de 10 mΩ que mide los amperios exactos que entran o salen de las celdas.', measure: 'Continuidad ~0.1 Ω entre sus extremos y voltaje de batería (~11.4V - 12.6V) en ambos lados.', pin: 'r010_bat' },
+      '12': { title: '11. Conector de Batería (JBAT • Izquierda)', desc: 'Terminal físico de la batería con pines de potencia (VBAT+) y bus de comunicación digital SMBus (SDA / SCL).', measure: 'Mide voltaje de batería en VBAT+ y 3.3V pull-up en las patas SDA y SCL.', pin: 'jbat' }
+    };
+
+    const usbcFaultSolutions = {
+      '5v_low': '<strong>🛠️ Solución de Taller (Caso 1 — 5V / 0.01A):</strong><br>1. Inspecciona con microscopio el puerto USB-C (pines doblados o sulfatados en CC1/CC2).<br>2. Mide en modo diodo CC1 y CC2 (deben marcar ~0.620V iguales; si uno da OL o diferente, revisa las resistencias <strong>Rd 512 de 5.1kΩ</strong>).<br>3. Verifica si el <strong>Controlador USB-PD (QFN-32)</strong> genera su LDO interno de 3.3V; si recibe 5V pero no dialoga por CC1/CC2, reemplaza el Controlador PD.',
+      '5v_high': '<strong>🛠️ Solución de Taller (Caso 2 — 5V / 1.35A):</strong><br>1. ¡No insistas conectando el cargador! Hay un cortocircuito directo en la línea primaria <strong>VBUS</strong> antes de Q1/Q2.<br>2. Revisa condensadores cerámicos en paralelo a VBUS y diodos TVS.<br>3. Inyecta 1V–3V limitados en VBUS con cámara térmica: el <strong>Controlador USB-PD</strong> o un capacitor de entrada calentará al instante.',
+      '20v_low': '<strong>🛠️ Solución de Taller (Caso 3 — 20V / 0.02A):</strong><br>1. El PD negoció 20V OK. Mide con el tester entre <strong>Drain y Source de Q1/Q2</strong> y verifica que el <strong>Pin 4 (Gate)</strong> tenga <strong>~25V</strong>.<br>2. Si Gate está en 0V, revisa que no exista corto entre Gate y Source (0.0 Ω) o corto en VSYS.<br>3. Si los 20V llegan hasta el <strong>BQ257xx</strong>, verifica que su pata <strong>CHRG_OK</strong> envíe 3.3V hacia la pata <strong>ACOK del KBC/EC</strong>.',
+      '20v_high': '<strong>🛠️ Solución de Taller (Caso 4 — 20V / 2.40A):</strong><br>1. La etapa USB-C PD y Q1/Q2 funcionaron bien, pero hay cortocircuito grave en el puente Buck-Boost o en el riel <strong>VSYS</strong>.<br>2. Mide resistencia a tierra en la <strong>Bobina L1 (2.2µH)</strong> y en <strong>VSYS</strong>.<br>3. Si marca menos de 5 Ω, inyecta 1V en VSYS para detectar cuál de los 4 MOSFETs Buck-Boost o condensadores está en corto.',
+      'batfet_open': '<strong>🛠️ Solución de Taller (Caso 5 — Falla en BATFET / Etapa Batería):</strong><br>1. Mide con el tester entre <strong>Drain (5-8) y Source (1-3) del BATFET</strong> en modo diodo: si da OL en ambos sentidos está abierto; si da 0.0 Ω está perforado en corto.<br>2. Verifica continuidad en la <strong>Resistencia Shunt de Batería (R010)</strong>.<br>3. Comprueba que la pata <strong>BGATE del BQ257xx</strong> envíe señal al Pin 4 (Gate) del BATFET.',
+      'smbus_dead': '<strong>🛠️ Solución de Taller (Caso 6 — Falla Bus SMBus / KBC):</strong><br>1. Mide voltaje en las patas <strong>SDA y SCL</strong> del conector <strong>JBAT</strong> (sin batería deben tener <strong>3.3V</strong> estables).<br>2. Si una línea está en 0V, desconecta la batería: si sube a 3.3V, la batería está dañada.<br>3. Si sigue caída sin batería, revisa las resistencias serie hacia las patas <strong>SMBUS del KBC/EC</strong> y el <strong>BQ257xx</strong>.'
+    };
+
+    const usbcFaultDescriptions = {
+      none: '',
+      '5v_low': '⚠️ CASO 1 (5V • 0.01A): Clavado en 5V con bajo consumo. Sin negociación PD en CC1/CC2.',
+      '5v_high': '⚠️ CASO 2 (5V • 1.35A): Sobreconsumo antes de negociar. Corto en VBUS o Controlador PD.',
+      '20v_low': '⚠️ CASO 3 (20V • 0.02A): PD negoció 20V OK, pero la energía se detiene en Q1/Q2 o en el IC Charger.',
+      '20v_high': '⚠️ CASO 4 (20V • 2.40A): Subió a 20V, pero hay cortocircuito en la etapa Buck-Boost / VSYS.',
+      'batfet_open': '⚠️ CASO 5 (20V • 0.45A): El sistema enciende con USB-C (VSYS OK), pero el BATFET está abierto (OL entre D-S) y aísla la batería.',
+      'smbus_dead': '⚠️ CASO 6 (20V • 0.40A): Falla en bus SMBus (SDA/SCL caída a 0V). El KBC no detecta la batería y bloquea la carga.'
+    };
+
+    let usbcState = { selected: '1', mmMode: 'V' };
+
+    function getUsbcReadings(compId) {
+      const mode = document.getElementById('usbc-power-mode').value;
+      const fault = document.getElementById('usbc-fault-select').value;
+      const hasAc = mode !== 'bat_only';
+      const hasBat = mode !== 'ac_only';
+
+      let v = 0, cont = '0.520 V (Caída OK)', mosfetTest = 'Selecciona Q1/Q2 o BATFET', beep = false, status = 'Normal';
+
+      if (compId === '1') cont = '0.620 V (CC1/CC2 OK)';
+      if (compId === '2') cont = '5.10 kΩ (Rd OK)';
+      if (['7', '9', '11'].includes(compId)) { cont = '0.1 Ω (Pita)'; beep = true; }
+      if (compId === '12') cont = '3.3V Pull-Up SDA/SCL';
+
+      if (compId === '5') {
+        if (fault === '20v_low') {
+          mosfetTest = 'D-S: 0.52V | G-S: 0.0Ω (¡Gate Corto!)';
+          beep = true;
+        } else {
+          mosfetTest = 'D-S: 0.520V / OL | G-S: OL (MOSFET OK)';
+        }
+      } else if (compId === '10') {
+        if (fault === 'batfet_open') {
+          mosfetTest = 'D-S: OL / OL (¡BATFET ABIERTO!)';
+        } else {
+          mosfetTest = 'D-S: 0.510V / OL | G-S: OL (BATFET OK)';
+        }
+      } else {
+        mosfetTest = 'Toca Q1/Q2 o BATFET para medir D-S / G-S';
+      }
+
+      if (fault === '5v_low' && ['1', '2', '3'].includes(compId)) { cont = 'OL en CC1/CC2 (¡Sin PD!)'; beep = false; }
+      if (fault === '5v_high' && ['1', '3'].includes(compId)) { cont = '0.012 V (¡CORTO VBUS!)'; beep = true; }
+      if (fault === '20v_high' && ['6', '7', '9'].includes(compId)) { cont = '0.008 V (¡CORTO VSYS!)'; beep = true; }
+      if (fault === 'batfet_open' && ['10', '11'].includes(compId)) { cont = 'OL (Circuito Abierto)'; beep = false; }
+      if (fault === 'smbus_dead' && compId === '12') { cont = '0.015 V (¡SDA a Tierra!)'; beep = true; }
+
+      if (!hasAc && hasBat) {
+        if (fault === 'batfet_open' && compId !== '12') {
+          v = 0.0; status = 'Batería aislada (BATFET abierto)';
+        } else if (['6', '8', '9', '10', '11', '12'].includes(compId)) {
+          v = compId === '8' ? 3.3 : 11.8;
+          status = 'Alimentado por Batería (VSYS)';
+        } else {
+          v = 0.0; status = 'Sin cargador USB-C (Bloqueado Q2)';
+        }
+      } else {
+        if (fault === '5v_low') {
+          v = ['1', '3'].includes(compId) ? 5.0 : 0.0;
+          status = v > 0 ? 'Clavado en 5V (Sin PD)' : 'Bloqueado (Falta 20V)';
+        } else if (fault === '5v_high') {
+          v = ['1', '3'].includes(compId) ? 4.35 : 0.0;
+          status = v > 0 ? '¡Caída por Sobreconsumo!' : 'Protegido (0V)';
+        } else if (fault === '20v_low') {
+          if (['1', '3'].includes(compId)) { v = 20.0; status = 'Negociado 20V OK'; }
+          else if (compId === '8') { v = 3.3; status = 'KBC esperando ACOK'; }
+          else if (compId === '12' && hasBat) { v = 11.4; status = 'Batería en reposo'; }
+          else { v = 0.0; status = 'Detenido en Q1/Q2 (Gate 0V)'; }
+        } else if (fault === '20v_high') {
+          if (['1', '3', '5'].includes(compId)) { v = 20.0; status = 'PD Negoció 20V'; }
+          else { v = 1.1; status = '¡Corto en VSYS / Buck-Boost!'; }
+        } else if (fault === 'batfet_open') {
+          if (['1', '5', '6', '7'].includes(compId)) { v = 20.0; status = 'Entrada 20V OK'; }
+          else if (compId === '3') { v = 25.0; status = 'Gate 25V OK'; }
+          else if (compId === '9') { v = 12.6; status = 'VSYS OK (Solo Sistema)'; }
+          else if (compId === '8') { v = 3.3; status = 'KBC Activo'; }
+          else if (compId === '12' && hasBat) { v = 11.2; status = 'Batería sin cargar'; }
+          else { v = 0.0; status = '¡Cortado en BATFET!'; }
+        } else if (fault === 'smbus_dead') {
+          if (['1', '5', '6', '7'].includes(compId)) { v = 20.0; status = '20V Activo OK'; }
+          else if (compId === '3') { v = 25.0; status = 'Gate 25V OK'; }
+          else if (compId === '9') { v = 12.6; status = 'VSYS Activo'; }
+          else if (compId === '8') { v = 3.3; status = 'KBC sin lectura batería'; }
+          else if (compId === '12') { v = 0.0; status = '¡SDA/SCL en 0V (Sin Carga)!'; }
+          else { v = 11.4; status = 'Carga deshabilitada'; }
+        } else {
+          if (['1', '5', '6', '7'].includes(compId)) { v = 20.0; status = '20V Activo OK'; }
+          else if (compId === '3') { v = 25.0; status = 'HV Gate 25V Activo'; }
+          else if (compId === '2') { v = 1.65; status = 'Pulso CC1/CC2 OK'; }
+          else if (compId === '8') { v = 3.3; status = 'KBC/EC + ACOK + SMBus OK'; }
+          else if (['9', '10', '11', '12'].includes(compId)) {
+            v = hasBat ? 12.6 : 12.2;
+            status = hasBat ? 'VSYS / Cargando Batería' : 'VSYS Activo (Sin Batería)';
+          }
+        }
+      }
+      return { v: v.toFixed(2) + ' V', rawV: v, cont, mosfetTest, beep, status };
+    }
+
+    function updateUsbcSim() {
+      if (negTimer) togglePlayNeg();
+      const mode = document.getElementById('usbc-power-mode').value;
+      const fault = document.getElementById('usbc-fault-select').value;
+      const isChal = document.getElementById('usbc-challenge-box').classList.contains('visible');
+      const hasAc = mode !== 'bat_only';
+      const hasBat = mode !== 'ac_only';
+
+      ['1', '2', '3', '5', '5b', '6', '7', '8', '9', '10', '11', '12'].forEach(id => {
+        const el = document.getElementById('uh-' + id);
+        if (el) el.classList.remove('faulted');
+      });
+
+      const allWires = ['uw-cc-rd', 'uw-vbus-pd', 'uw-cc-pd', 'uw-vbus-q1', 'uw-gate-25v', 'uw-q1-q2', 'uw-q2-chg', 'uw-buck-vsys', 'uw-vsys-bat', 'uw-bgate', 'uw-i2c', 'uw-smbus', 'uw-chg-kbc'];
+      allWires.forEach(w => { const el = document.getElementById(w); el.classList.add('off'); el.classList.remove('reverse'); });
+
+      const tV = document.getElementById('usbc-tester-v');
+      const tA = document.getElementById('usbc-tester-a');
+      const tMsg = document.getElementById('usbc-tester-msg');
+      const banner = document.getElementById('usbc-fault-banner');
+
+      banner.style.display = (fault === 'none' || isChal) ? 'none' : 'block';
+      banner.textContent = usbcFaultDescriptions[fault];
+
+      if (!hasAc) {
+        tV.textContent = '0.0 V'; tA.textContent = '0.00 A'; tV.style.color = '#64748b';
+        tMsg.textContent = '🔌 Cargador USB-C desconectado (Funcionando con Batería)';
+        if (hasBat && fault !== 'batfet_open') {
+          ['uw-vsys-bat', 'uw-buck-vsys', 'uw-smbus', 'uw-chg-kbc'].forEach(id => {
+            const el = document.getElementById(id);
+            el.classList.remove('off');
+            if (id === 'uw-vsys-bat') el.classList.add('reverse');
+          });
+        }
+      } else {
+        if (fault === '5v_low') {
+          tV.textContent = '5.0 V'; tA.textContent = '0.01 A'; tV.style.color = '#f59e0b';
+          tMsg.textContent = isChal ? '📟 Amperímetro: 5.0V • 0.01A (Investiga la placa)' : '⚠️ Caso 1: Clavado en 5V con bajo consumo (Sin negociación PD)';
+          ['uw-cc-rd', 'uw-vbus-pd'].forEach(id => document.getElementById(id).classList.remove('off'));
+          if (!isChal) document.getElementById('uh-3').classList.add('faulted');
+        } else if (fault === '5v_high') {
+          tV.textContent = '4.35 V'; tA.textContent = '1.35 A'; tV.style.color = '#ef4444';
+          tMsg.textContent = isChal ? '📟 Amperímetro: 4.35V • 1.35A (Investiga la placa)' : '🔥 Caso 2: 5V con sobreconsumo (Corto en VBUS o Chip PD)';
+          document.getElementById('uw-vbus-pd').classList.remove('off');
+          if (!isChal) document.getElementById('uh-3').classList.add('faulted');
+        } else if (fault === '20v_low') {
+          tV.textContent = '20.0 V'; tA.textContent = '0.02 A'; tV.style.color = '#38bdf8';
+          tMsg.textContent = isChal ? '📟 Amperímetro: 20.0V • 0.02A (Investiga la placa)' : 'ℹ️ Caso 3: 20V negociado OK, pero la energía no cruza hacia VSYS';
+          ['uw-cc-rd', 'uw-vbus-pd', 'uw-cc-pd', 'uw-vbus-q1'].forEach(id => document.getElementById(id).classList.remove('off'));
+          if (!isChal) document.getElementById('uh-5').classList.add('faulted');
+        } else if (fault === '20v_high') {
+          tV.textContent = '20.0 V'; tA.textContent = '2.40 A'; tV.style.color = '#ef4444';
+          tMsg.textContent = isChal ? '📟 Amperímetro: 20.0V • 2.40A (Investiga la placa)' : '🔥 Caso 4: 20V negociado OK, pero hay cortocircuito en VSYS / Buck-Boost';
+          ['uw-cc-rd', 'uw-vbus-pd', 'uw-cc-pd', 'uw-vbus-q1', 'uw-gate-25v', 'uw-q1-q2', 'uw-q2-chg', 'uw-buck-vsys'].forEach(id => document.getElementById(id).classList.remove('off'));
+          if (!isChal) document.getElementById('uh-9').classList.add('faulted');
+        } else if (fault === 'batfet_open') {
+          tV.textContent = '20.0 V'; tA.textContent = '0.45 A'; tV.style.color = '#f59e0b';
+          tMsg.textContent = isChal ? '📟 Amperímetro: 20.0V • 0.45A (Investiga la etapa batería)' : '⚠️ Caso 5: Sistema enciende (VSYS OK), pero BATFET abierto';
+          ['uw-cc-rd', 'uw-vbus-pd', 'uw-cc-pd', 'uw-vbus-q1', 'uw-gate-25v', 'uw-q1-q2', 'uw-q2-chg', 'uw-buck-vsys', 'uw-i2c', 'uw-chg-kbc'].forEach(id => document.getElementById(id).classList.remove('off'));
+          if (!isChal) document.getElementById('uh-10').classList.add('faulted');
+        } else if (fault === 'smbus_dead') {
+          tV.textContent = '20.0 V'; tA.textContent = '0.40 A'; tV.style.color = '#ec4899';
+          tMsg.textContent = isChal ? '📟 Amperímetro: 20.0V • 0.40A (Investiga comunicación batería)' : '⚠️ Caso 6: Bus SMBus (SDA/SCL) dañado — KBC no detecta batería';
+          ['uw-cc-rd', 'uw-vbus-pd', 'uw-cc-pd', 'uw-vbus-q1', 'uw-gate-25v', 'uw-q1-q2', 'uw-q2-chg', 'uw-buck-vsys', 'uw-i2c', 'uw-chg-kbc'].forEach(id => document.getElementById(id).classList.remove('off'));
+          if (!isChal) document.getElementById('uh-12').classList.add('faulted');
+        } else {
+          tV.textContent = '20.0 V'; tA.textContent = hasBat ? '1.65 A' : '0.45 A'; tV.style.color = '#34d399';
+          tMsg.textContent = hasBat ? '✅ Negociación PD Exitosa (20V • VSYS + Cargando Batería)' : '✅ Negociación PD Exitosa (20V • Alimentando VSYS)';
+          allWires.forEach(id => {
+            if (!hasBat && (id === 'uw-vsys-bat' || id === 'uw-smbus' || id === 'uw-bgate')) return;
+            document.getElementById(id).classList.remove('off');
+          });
+        }
+      }
+      inspectUsbc(usbcState.selected, false);
+    }
+
+    function inspectUsbc(compId, triggerSound = true) {
+      usbcState.selected = compId;
+      ['1', '2', '3', '5', '6', '7', '8', '9', '10', '11', '12'].forEach(id => {
+        const el = document.getElementById('uh-' + id);
+        if (el) el.classList.toggle('selected', id === compId);
+      });
+
+      const fault = document.getElementById('usbc-fault-select').value;
+      const isChal = document.getElementById('usbc-challenge-box').classList.contains('visible');
+      const info = usbcComponents[compId] || usbcComponents['1'];
+      const reading = getUsbcReadings(compId);
+
+      document.getElementById('usbc-probe-label').textContent = 'Punto: ' + info.title;
+      document.getElementById('usbc-comp-title').textContent = (fault !== 'none' && !isChal) ? 'Guía de Reparación • ' + info.title : info.title;
+
+      if (fault !== 'none' && !isChal && usbcFaultSolutions[fault]) {
+        document.getElementById('usbc-comp-desc').innerHTML = usbcFaultSolutions[fault];
+      } else if (isChal) {
+        document.getElementById('usbc-comp-desc').textContent = 'Modo Desafío activo: mide los voltajes, diodos y patas D-S / G-S de los MOSFETs para descubrir cuál de las 6 fallas está ocurriendo.';
+      } else {
+        document.getElementById('usbc-comp-desc').textContent = info.desc;
+      }
+
+      document.getElementById('usbc-comp-measure').innerHTML = '<strong>Cómo medirlo:</strong> ' + info.measure;
+
+      if (info.pin) inspectPin(info.pin);
+
+      const valEl = document.getElementById('usbc-mm-val');
+      if (usbcState.mmMode === 'V') {
+        valEl.textContent = reading.v;
+        document.getElementById('usbc-mm-mode-lbl').textContent = 'ESCALA: DC VOLTS (20V)';
+        valEl.classList.toggle('danger', reading.rawV > 0 && reading.rawV < 4.6);
+      } else if (usbcState.mmMode === 'C') {
+        valEl.textContent = reading.cont;
+        document.getElementById('usbc-mm-mode-lbl').textContent = 'ESCALA: DIODO A GND';
+        valEl.classList.toggle('danger', reading.cont.includes('CORTO') || reading.cont.includes('Abierto') || reading.cont.includes('Sin PD') || reading.cont.includes('Tierra'));
+        if (triggerSound && reading.beep) playBeep();
+      } else if (usbcState.mmMode === 'M') {
+        valEl.textContent = reading.mosfetTest;
+        valEl.style.fontSize = '1.05rem';
+        document.getElementById('usbc-mm-mode-lbl').textContent = 'PRUEBA ENTRE PATAS (D-S / G-S)';
+        valEl.classList.toggle('danger', reading.mosfetTest.includes('Corto') || reading.mosfetTest.includes('ABIERTO'));
+        if (triggerSound && reading.beep) playBeep();
+        return;
+      }
+      valEl.style.fontSize = '1.75rem';
+      document.getElementById('usbc-mm-status').textContent = 'Estado: ' + reading.status;
+    }
+
+    // =========================================================================
+    // CONTROLES COMPARTIDOS Y DESAFÍOS CORREGIDOS (SIN DESFASE DE RESPUESTA)
+    // =========================================================================
+    function setMmMode(sim, mode) {
+      if (sim === 'trad') {
+        tradState.mmMode = mode;
+        document.getElementById('trad-btn-v').classList.toggle('active', mode === 'V');
+        document.getElementById('trad-btn-c').classList.toggle('active', mode === 'C');
+        inspectTrad(tradState.selected, true);
+      } else {
+        usbcState.mmMode = mode;
+        document.getElementById('usbc-btn-v').classList.toggle('active', mode === 'V');
+        document.getElementById('usbc-btn-c').classList.toggle('active', mode === 'C');
+        document.getElementById('usbc-btn-m').classList.toggle('active', mode === 'M');
+        inspectUsbc(usbcState.selected, true);
+      }
+    }
+
+    let challengeAnswers = { trad: '', usbc: '' };
+
+    function randomFault(sim) {
+      if (sim === 'trad') {
+        const opts = ['pf101_open', 'no_charge_pump', 'pq302_short', 'pu301_dead', 'pf201_open'];
+        const current = document.getElementById('trad-fault-select').value;
+        const filtered = opts.filter(o => o !== current);
+        const chosen = filtered[Math.floor(Math.random() * filtered.length)];
+
+        document.getElementById('trad-power-mode').value = 'charging';
+        document.getElementById('trad-fault-select').value = chosen;
+        challengeAnswers.trad = chosen;
+        document.getElementById('trad-guess-select').value = '';
+        document.getElementById('trad-chal-feedback').textContent = '';
+        updateTradSim();
+      } else {
+        const opts = ['5v_low', '5v_high', '20v_low', '20v_high', 'batfet_open', 'smbus_dead'];
+        const current = document.getElementById('usbc-fault-select').value;
+        const filtered = opts.filter(o => o !== current);
+        const chosen = filtered[Math.floor(Math.random() * filtered.length)];
+
+        document.getElementById('usbc-power-mode').value = 'charging';
+        document.getElementById('usbc-fault-select').value = chosen;
+        challengeAnswers.usbc = chosen;
+        document.getElementById('usbc-guess-select').value = '';
+        document.getElementById('usbc-chal-feedback').textContent = '';
+        updateUsbcSim();
+      }
+    }
+
+    function toggleChallenge(sim) {
+      const box = document.getElementById(sim + '-challenge-box');
+      const btn = document.getElementById('btn-chal-' + sim);
+      const isVisible = box.classList.toggle('visible');
+      btn.classList.toggle('active', isVisible);
+
+      document.getElementById(sim + '-fault-select').disabled = isVisible;
+      document.getElementById(sim + '-power-mode').disabled = isVisible;
+      document.getElementById('btn-rand-' + sim).disabled = isVisible;
+
+      if (isVisible) {
+        randomFault(sim);
+      } else {
+        challengeAnswers[sim] = '';
+        document.getElementById(sim + '-guess-select').value = '';
+        document.getElementById(sim + '-chal-feedback').textContent = '';
+        if (sim === 'trad') updateTradSim();
+        else updateUsbcSim();
+      }
+    }
+
+    function checkChallenge(sim) {
+      const guess = document.getElementById(sim + '-guess-select').value;
+      const fb = document.getElementById(sim + '-chal-feedback');
+      const realFault = document.getElementById(sim + '-fault-select').value;
+
+      if (!guess) {
+        fb.style.color = '#fbbf24';
+        fb.textContent = '⚠️ Selecciona primero una opción de diagnóstico.';
+        return;
+      }
+
+      if (guess === realFault) {
+        fb.style.color = '#34d399';
+        fb.textContent = '🎉 ¡Excelente diagnóstico! Identificaste exactamente la falla.';
+        // Revelamos visualmente la solución y el componente culpable sin apagar la caja de éxito
+        document.getElementById(sim + '-fault-select').disabled = false;
+        document.getElementById(sim + '-power-mode').disabled = false;
+        document.getElementById('btn-rand-' + sim).disabled = false;
+
+        if (sim === 'trad') {
+          const banner = document.getElementById('trad-fault-banner');
+          banner.style.display = 'block';
+          banner.textContent = tradFaultDescriptions[realFault];
+          const faultMap = { pf101_open: 'th-3', no_charge_pump: 'th-5', pq302_short: 'th-5', pu301_dead: 'th-8', pf201_open: 'th-11' };
+          if (faultMap[realFault]) document.getElementById(faultMap[realFault]).classList.add('faulted');
+        } else {
+          const banner = document.getElementById('usbc-fault-banner');
+          banner.style.display = 'block';
+          banner.textContent = usbcFaultDescriptions[realFault];
+          const compFocus = { '5v_low': '3', '5v_high': '3', '20v_low': '5', '20v_high': '9', 'batfet_open': '10', 'smbus_dead': '12' };
+          const faultMap = { '5v_low': 'uh-3', '5v_high': 'uh-3', '20v_low': 'uh-5', '20v_high': 'uh-9', 'batfet_open': 'uh-10', 'smbus_dead': 'uh-12' };
+          if (compFocus[realFault]) inspectUsbc(compFocus[realFault], false);
+          if (faultMap[realFault]) document.getElementById(faultMap[realFault]).classList.add('faulted');
+          if (usbcFaultSolutions[realFault]) {
+            document.getElementById('usbc-comp-desc').innerHTML = usbcFaultSolutions[realFault];
+          }
+        }
+      } else {
+        fb.style.color = '#f87171';
+        fb.textContent = '❌ No coincide con las mediciones. Vuelve a revisar los voltajes y continuidades.';
+      }
+    }
+
+    // Inicializar
+    updateTradSim();
+    updateUsbcSim();
+    inspectPin('cc1');
+  </script>
+</body>
+</html>
